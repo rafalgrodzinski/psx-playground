@@ -10,11 +10,13 @@ struct video_Texture;
 struct cd_File;
 
 typedef struct model_Model {
-  int count;
-  POLY_GT3 *polys;
+  int polys_count;
   SVECTOR **vertices;
   SVECTOR **normals;
   CVECTOR **colors;
+  u_short *tpages;
+  u_short *cluts;
+  u_char **uvs;
 } model_Model;
 
 typedef struct model_Cube {

@@ -19,8 +19,8 @@ typedef struct video_Texture {
   RECT crect;
   u_short tpage;
   u_short clut;
-  u_long mode;
   u_long caddr;
+  u_long mode;
 } video_Texture;
 
 void video_init(int mode);
@@ -36,6 +36,7 @@ video_Texture video_load_texture(struct cd_File file);
 void video_draw();
 void video_draw_sprite(video_Texture texture, int x, int y);
 void video_draw_poly4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal);
-void video_draw_poly3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]);
+//void video_draw_poly3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]);
+void video_draw_model(struct model_Model model);
 
 #endif
