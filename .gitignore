@@ -1,0 +1,10 @@
+# Windows
+thumbs.db
+
+*.exe
+*.cpe
+/*.obj
+*.bin
+*.cue
+*.sys
+*.map
