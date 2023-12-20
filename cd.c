@@ -7,7 +7,7 @@ void cd_init() {
 }
 
 cd_File cd_load_file(char *filename) {
-  cd_File result;
+  cd_File result = { NULL, 0 };
   CdlFILE file;
   int sectors_count;
 

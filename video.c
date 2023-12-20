@@ -135,10 +135,8 @@ void video_draw() {
 
 void video_draw_sprite(sprite_Sprite sprite, int x, int y) {
   setXY0(sprite.sprite, x, y);
-  //draw[currentBuffer].tpage = sprite.tpage;
   AddPrim(ot[currentBuffer], sprite.sprite);
-  draw[currentBuffer].tpage = getTPage(sprite.mode, 0, sprite.prect.x, sprite.prect.y);
-  //AddPrim(ot[currentBuffer], sprite.tpage_change);
+  AddPrim(ot[currentBuffer], sprite.tpage_change);
 }
 
 void video_draw_poly4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {
