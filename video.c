@@ -1,16 +1,11 @@
 #include "video.h"
+#include "sprite.h"
 #include "cd.h"
-
-#define OT_SIZE 4096
-#define PRIMS_SIZE 65536
 
 DISPENV disp[2];
 DRAWENV draw[2];
 
 u_long ot[2][OT_SIZE];
-char prims_buffer[2][PRIMS_SIZE];
-char *next_prim;
-
 BOOL currentBuffer;
 MATRIX cameraMatrix;
 
@@ -69,7 +64,6 @@ void video_init_frame() {
   SetTransMatrix(&cameraMatrix);
   SetRotMatrix(&cameraMatrix);
 
-  next_prim = prims_buffer[currentBuffer];
   ClearOTag(ot[currentBuffer], OT_SIZE);
 }
 
@@ -105,8 +99,10 @@ video_Texture video_load_texture(cd_File file) {
 
   OpenTIM((u_long*)file.buffer);
   ReadTIM(&tim);
+  //LoadImage(texture.tim.prect, texture.tim.paddr);
   LoadImage(tim.prect, tim.paddr);
   DrawSync(0);
+  //texture.tpage = getTPage(texture.tim.mode, 2, texture.tim.prect->x, texture.tim.prect->y);
   texture.tpage = getTPage(tim.mode, 2, tim.prect->x, tim.prect->y);
 
   if (tim.caddr) {
@@ -137,28 +133,12 @@ void video_draw() {
   currentBuffer = !currentBuffer;
 }
 
-void video_draw_sprite(video_Texture texture, int x, int y) {
-  SPRT *sprite_prim;
-  DR_TPAGE *tpage_prim;
-  short u, v;
-
-  sprite_prim = (SPRT*)next_prim;
-  next_prim += sizeof(SPRT);
-  SetSprt(sprite_prim);
-  setXY0(sprite_prim, x, y);
-  u = (texture.prect.x % 64) << (2 - (texture.mode & 3));
-  v = texture.prect.y & 0xff;
-  setUV0(sprite_prim, u, v);
-  setWH(sprite_prim, texture.prect.w, texture.prect.h);
-  setShadeTex(sprite_prim, 1);
-  if (texture.caddr)
-    sprite_prim->clut = texture.clut;
-  AddPrim(ot[currentBuffer], sprite_prim);
-
-  tpage_prim = (SPRT*)next_prim;
-  next_prim += sizeof(SPRT);
-  SetDrawTPage(tpage_prim, 0, 0, texture.tpage);
-  AddPrim(ot[currentBuffer], tpage_prim);
+void video_draw_sprite(sprite_Sprite sprite, int x, int y) {
+  setXY0(sprite.sprite, x, y);
+  //draw[currentBuffer].tpage = sprite.tpage;
+  AddPrim(ot[currentBuffer], sprite.sprite);
+  draw[currentBuffer].tpage = getTPage(sprite.mode, 0, sprite.prect.x, sprite.prect.y);
+  //AddPrim(ot[currentBuffer], sprite.tpage_change);
 }
 
 void video_draw_poly4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {

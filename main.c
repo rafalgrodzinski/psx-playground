@@ -9,6 +9,7 @@
 #include "audio.h"
 #include "pad.h"
 #include "cd.h"
+#include "sprite.h"
 #include "model.h"
 
 VECTOR vec = {0, 0, 1024};
@@ -19,7 +20,8 @@ SVECTOR ang2 = {0, 0, 0};
 
 cd_File file;
 model_Model model, model2;
-video_Texture texture1, texture2;
+video_Texture texture;
+sprite_Sprite sprite, sprite2;
 
 
 int main() {
@@ -36,13 +38,14 @@ int main() {
 
   file = cd_load_file("\\EARTH8.TIM;1");
   printf("EARTH8.TIM start: 0x%08x, size: 0x%08x\n", file.buffer, file.size);
-  texture1 = video_load_texture(file);
+  texture = video_load_texture(file);
   cd_free_file(file);
+  sprite = sprite_load_sprite(texture);
 
-  //file = cd_load_file("\\EARTH.TMD;1");
-  //printf("EARTH.TMD start: 0x%08x, size: 0x%08x\n", file.buffer, file.size);
-  //model2 = model_load_tmd(file, TRUE, &texture);
-  //cd_free_file(file);
+  file = cd_load_file("\\EARTH.TMD;1");
+  printf("EARTH.TMD start: 0x%08x, size: 0x%08x\n", file.buffer, file.size);
+  model2 = model_load_tmd(file, TRUE, &texture);
+  cd_free_file(file);
 
   /*file = cd_load_file("\\DINO.TMD;1");
   model2 = model_load_tmd(file, TRUE, &texture);
@@ -83,9 +86,10 @@ int main() {
   //model = model_load_tmd(file, TRUE, NULL);
   //cd_free_file(file);
 
-  file = cd_load_file("\\FROG.TIM;1");
-  texture2 = video_load_texture(file);
-  cd_free_file(file);
+  //file = cd_load_file("\\FROG.TIM;1");
+  //texture = video_load_texture(file);
+  //cd_free_file(file);
+  //sprite2 = sprite_load_sprite(texture);
 
 DrawSync(0);
   while(1) {
@@ -131,11 +135,11 @@ DrawSync(0);
     //for (i=0; i<model.count; i++)
     //  video_draw_poly3(&model.polys[i], model.vertices[i], model.colors[i], model.normals[i]);
 
-    //for (i=0; i<model2.count; i++)
-    //  video_draw_poly3(&model2.polys[i], model2.vertices[i], model2.colors[i], model2.normals[i]);
+    for (i=0; i<model2.count; i++)
+      video_draw_poly3(&model2.polys[i], model2.vertices[i], model2.colors[i], model2.normals[i]);
 
-    video_draw_sprite(texture1, 0, 0);
-    video_draw_sprite(texture2, 150, 150);
+    //video_draw_sprite(sprite, 0, 0);
+    //video_draw_sprite(sprite2, 150, 150);
 
     video_draw();
   }
