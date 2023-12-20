@@ -112,6 +112,7 @@ model_Cube model_cube(short size, u_char r, u_char g, u_char b) {
 
 model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *texture) {
   model_Model model;
+
   long polys_count;
   long number = 0;
   TMD_PRIM tmd_prim;
@@ -119,18 +120,15 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
 
   polys_count = OpenTMD(file.buffer, 0);
 
-  model.polys_count = polys_count;
+  model.count = polys_count;
+  model.polys = (POLY_GT3 *)malloc3(sizeof(POLY_GT3) * polys_count);
   model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * polys_count);
   model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * polys_count);
   model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * polys_count);
 
-  if (is_textured) {
-    model.tpages = (u_short*)malloc3(sizeof(u_short) * polys_count);
-    model.cluts = (u_short*)malloc3(sizeof(u_short) * polys_count);
-    model.uvs = (u_char**)malloc3(sizeof(u_char*) * polys_count);
-  }
-
   for (i=0; i<polys_count && ReadTMD(&tmd_prim); i++) {
+    SetPolyGT3(&model.polys[i]);
+
     model.vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 3);
     copyVector(&model.vertices[i][0], &tmd_prim.x0);
     copyVector(&model.vertices[i][1], &tmd_prim.x1);
@@ -142,25 +140,18 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
     copyVector(&model.normals[i][2], &tmd_prim.n2);
 
     model.colors[i] = (CVECTOR*)malloc3(sizeof(CVECTOR) * 3);
-    //model.colors[i][0].cd = model.polys[i].code;
-    //model.colors[i][1].cd = model.polys[i].code;
-    //model.colors[i][2].cd = model.polys[i].code;
+    model.colors[i][0].cd = model.polys[i].code;
+    model.colors[i][1].cd = model.polys[i].code;
+    model.colors[i][2].cd = model.polys[i].code;
 
     if (is_textured) {
-      model.uvs[i] = (u_char*)malloc3(sizeof(u_char) * 6);
-      model.uvs[i][0] = tmd_prim.u0;
-      model.uvs[i][1] = tmd_prim.v0;
-      model.uvs[i][2] = tmd_prim.u1;
-      model.uvs[i][3] = tmd_prim.v1;
-      model.uvs[i][4] = tmd_prim.u2;
-      model.uvs[i][5] = tmd_prim.v2;
-
+      setUV3(&model.polys[i], tmd_prim.u0, tmd_prim.v0, tmd_prim.u1, tmd_prim.v1, tmd_prim.u2, tmd_prim.v2);
       if (texture != NULL) {
-        model.tpages[i] = texture->tpage;
-        model.cluts[i] = texture->clut;
+        model.polys[i].tpage = texture->tpage;
+        model.polys[i].clut = texture->clut;
       } else {
-        model.tpages[i] = tmd_prim.tpage;
-        model.cluts[i] = tmd_prim.clut;
+        model.polys[i].tpage = tmd_prim.tpage;
+        model.polys[i].clut = tmd_prim.clut;
       }
 
       model.colors[i][0].r = 128;
@@ -175,8 +166,6 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
       model.colors[i][2].g = 128;
       model.colors[i][2].b = 128;
     } else {
-      model.tpages = model.cluts = model.uvs = NULL;
-
       model.colors[i][0].r = tmd_prim.r0;
       model.colors[i][0].g = tmd_prim.g0;
       model.colors[i][0].b = tmd_prim.b0;
@@ -189,6 +178,8 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
       model.colors[i][2].g = tmd_prim.g2;
       model.colors[i][2].b = tmd_prim.b2;
     }
+
+    //SetSemiTrans(&model.polys[i], 0);
   }
 
   printf("Loaded model, poly count: %d\n", polys_count);
