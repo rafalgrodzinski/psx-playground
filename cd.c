@@ -9,28 +9,27 @@ void cd_init() {
 cd_File cd_load_file(char *filename) {
   cd_File result;
   CdlFILE file;
-  int sectorsCount;
-  //u_long *buffer;
+  int sectors_count;
 
   if(!CdSearchFile(&file, filename)) {
     printf("Couldn't find file %s\n", filename);
     return result;
   }
 
-  sectorsCount = (file.size +  CD_SECTOR_SIZE - 1)/CD_SECTOR_SIZE;
-  result.buffer = (char*)malloc3(SECTOR_SIZE * sectorsCount);
-  printf("Reading file %s, %d sectors\n", filename, sectorsCount);
-  
-  CdControlB(CdlSetloc, (u_char*)&file.pos, NULL);
-  //CdReadSync(0, NULL);
-  CdRead(sectorsCount, (u_long*)result.buffer, CdlModeSpeed);
+  sectors_count = (file.size +  CD_SECTOR_SIZE - 1)/CD_SECTOR_SIZE;
+  result.size = CD_SECTOR_SIZE * sectors_count;
+  result.buffer = (char*)malloc3(result.size);
+  printf("Allocated 0x%x bytes at 0x08x\n", result.size, result.buffer);
+
+  printf("Reading file %s, 0x%x bytes\n", filename, file.size);
+  CdControl(CdlSetloc, (u_char*)&file.pos, NULL);
+  CdRead(sectors_count, (u_long*)result.buffer, CdlModeSpeed);
   CdReadSync(0, NULL);
 
-  result.size = sectorsCount * CD_SECTOR_SIZE;
   return result;
 }
 
 void cd_free_file(cd_File file) {
-  printf("Freeing 0x%08x\n", file.buffer);
+  printf("Freeing 0x%x bytes at 0x%08x\n", file.size, file.buffer);
   free3(file.buffer);
 }
