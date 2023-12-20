@@ -19,7 +19,7 @@ cd_File cd_load_file(char *filename) {
   sectors_count = (file.size +  CD_SECTOR_SIZE - 1)/CD_SECTOR_SIZE;
   result.size = CD_SECTOR_SIZE * sectors_count;
   result.buffer = (char*)malloc3(result.size);
-  printf("Allocated 0x%x bytes at 0x08x\n", result.size, result.buffer);
+  printf("Allocated 0x%x bytes at 0x%08x\n", result.size, result.buffer);
 
   printf("Reading file %s, 0x%x bytes\n", filename, file.size);
   CdControl(CdlSetloc, (u_char*)&file.pos, NULL);
