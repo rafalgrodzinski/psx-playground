@@ -5,20 +5,20 @@
     <directory_tree>
       <file name="system.cnf" type="data"/>
       <file name="main.exe" type="data"/>
-      <file name="te.tmd" type="data"/>
-      <file name="dino.tmd" type="data"/>
-      <file name="earth.tmd" type="data"/>
-      <file name="earth4.tim" type="data"/>
-      <file name="earth8.tim" type="data"/>
-      <file name="shuttle.tmd" type="data"/>
-      <file name="giulieta.tmd" type="data"/>
-      <file name="frog.tim" type="data"/>
-      <file name="giuli_tr.tim" type="data"/>
-      <file name="giuli_wn.tim" type="data"/>
-      <file name="giuli_bd.tim" type="data"/>
-      <file name="giuli_tl.tim" type="data"/>
-      <file name="giuli_pl.tim" type="data"/>
-      <file name="giuli_fr.tim" type="data"/>
+      <file name="te.tmd" type="data" source="data/te.tmd"/>
+      <file name="dino.tmd" type="data" source="data/dino.tmd"/>
+      <file name="earth.tmd" type="data" source="data/earth.tmd"/>
+      <file name="earth4.tim" type="data" source="data/earth4.tim"/>
+      <file name="earth8.tim" type="data" source="data/earth8.tim"/>
+      <file name="shuttle.tmd" type="data" source="data/shuttle.tmd"/>
+      <file name="giulieta.tmd" type="data" source="data/giulieta.tmd"/>
+      <file name="frog.tim" type="data" source="data/frog.tim"/>
+      <file name="giuli_tr.tim" type="data" source="data/giuli_tr.tim"/>
+      <file name="giuli_wn.tim" type="data" source="data/giuli_wn.tim"/>
+      <file name="giuli_bd.tim" type="data" source="data/giuli_bd.tim"/>
+      <file name="giuli_tl.tim" type="data" source="data/giuli_tl.tim"/>
+      <file name="giuli_pl.tim" type="data" source="data/giuli_pl.tim"/>
+      <file name="giuli_fr.tim" type="data" source="data/giuli_fr.tim"/>
       <dummy sectors="1024"/>
     </directory_tree> 
   </track>

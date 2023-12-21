@@ -32,3 +32,4 @@ clean:
 	del *.bin
 	del *.cue
 	del *.map
+	del *.sys
