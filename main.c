@@ -30,7 +30,7 @@ int main() {
   // Allocate 1 MiB of heap, leave 64 KiB for stack
   InitHeap3((void*)0x800f0000, 0x00100000);
 
-  video_init(VIDEO_HI_RES);
+  video_init(VIDEO_LOW_RES);
   audio_init();
   pad_init();
   cd_init();
@@ -83,7 +83,6 @@ int main() {
   cd_free_file(file);
   sprite2 = sprite_load_sprite(texture);
 
-DrawSync(0);
   while(1) {
     if (pad_is_pressed(PAD_1, PAD_UP))
       vec.vy -= 32;

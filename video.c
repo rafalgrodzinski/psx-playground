@@ -69,6 +69,17 @@ void video_init_frame() {
   ClearOTag(ot[current_buffer], OT_SIZE);
 }
 
+void video_draw() {
+  DrawSync(0);
+  VSync(0);
+  PutDispEnv(&disp[current_buffer]);
+  PutDrawEnv(&draw[current_buffer]);
+  DrawOTag(ot[current_buffer]); 
+
+  current_buffer = !current_buffer;
+}
+
+
 void video_set_camera(VECTOR offset, SVECTOR angle) {
   RotMatrix(&angle, &cameraMatrix);
   TransMatrix(&cameraMatrix, &offset);
@@ -114,19 +125,6 @@ video_Texture video_load_texture(cd_File file) {
   printf("Loaded texture, x: %d y: %d w: %d h: %d mode: %d\n", tim.prect->x, tim.prect->y, tim.prect->w, tim.prect->h, tim.mode);
 
   return texture;
-}
-
-void video_draw() {
-  DrawSync(0);
-  VSync(0);
-
-  PutDispEnv(&disp[current_buffer]);
-  PutDrawEnv(&draw[current_buffer]);
-
-  DrawOTag(ot[current_buffer]); 
-  DrawSync(0);
-
-  current_buffer = !current_buffer;
 }
 
 void video_draw_sprite(sprite_Sprite sprite, int x, int y) {
