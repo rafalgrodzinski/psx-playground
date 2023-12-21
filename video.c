@@ -1,5 +1,6 @@
 #include "video.h"
 #include "sprite.h"
+#include "model.h"
 #include "cd.h"
 
 #define OT_SIZE 4096
@@ -133,7 +134,19 @@ void video_draw_sprite(sprite_Sprite sprite, int x, int y) {
   AddPrim(ot[current_buffer], sprite.tpage_change);
 }
 
-void video_draw_poly4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {
+void video_draw_model(model_Model model) {
+  int i;
+
+  if (model.f4_polys != NULL) {
+    for (i=0; i<model.polys_count; i++)
+      video_draw_poly_f4(&model.f4_polys[i], model.vertices[i], model.colors[i][0], model.normals[i][0]);
+  } else if (model.gt3_polys != NULL) {
+    for (i=0; i<model.polys_count; i++)
+      video_draw_poly_gt3(&model.gt3_polys[i], model.vertices[i], model.colors[i], model.normals[i]);
+  }
+}
+
+void video_draw_poly_f4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {
   long outerProduct, otz;
   long dummy1, dummy2;
 
@@ -146,7 +159,7 @@ void video_draw_poly4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR
   }
 }
 
-void video_draw_poly3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]) {
+void video_draw_poly_gt3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]) {
   long outerProduct, otz;
   long dummy1, dummy2;
 

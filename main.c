@@ -30,7 +30,7 @@ int main() {
   // Allocate 1 MiB of heap, leave 64 KiB for stack
   InitHeap3((void*)0x800f0000, 0x00100000);
 
-  video_init(VIDEO_LOW_RES);
+  video_init(VIDEO_HI_RES);
   audio_init();
   pad_init();
   cd_init();
@@ -134,8 +134,9 @@ int main() {
     //for (i=0; i<model3.polys_count; i++)
     //  video_draw_poly3(&model3.polys[i], model3.vertices[i], model3.colors[i], model3.normals[i]);
 
-    for (i=0; i<model4.polys_count; i++)
-      video_draw_poly4(&model4.f4_polys[i], model4.vertices[i], model4.colors[i][0], model4.normals[i][0]);
+    //for (i=0; i<model4.polys_count; i++)
+    //  video_draw_poly4(&model4.f4_polys[i], model4.vertices[i], model4.colors[i][0], model4.normals[i][0]);
+    video_draw_model(model3);
 
     video_draw_sprite(sprite1, 0, 0);
     video_draw_sprite(sprite2, 150, 150);

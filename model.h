@@ -11,8 +11,8 @@ struct cd_File;
 
 typedef struct model_Model {
   int polys_count;
-  POLY_GT3 *polys;
   POLY_F4 *f4_polys;
+  POLY_GT3 *gt3_polys;
   SVECTOR **vertices;
   SVECTOR **normals;
   CVECTOR **colors;

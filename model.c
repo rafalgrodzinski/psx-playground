@@ -9,13 +9,13 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
 
   model.polys_count = OpenTMD(file.buffer, 0);
 
-  model.polys = (POLY_GT3*)malloc3(sizeof(POLY_GT3) * model.polys_count);
+  model.gt3_polys = (POLY_GT3*)malloc3(sizeof(POLY_GT3) * model.polys_count);
   model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * model.polys_count);
 
   for (i=0; i<model.polys_count && ReadTMD(&tmd_prim); i++) {
-    SetPolyGT3(&model.polys[i]);
+    SetPolyGT3(&model.gt3_polys[i]);
 
     model.vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 3);
     copyVector(&model.vertices[i][0], &tmd_prim.x0);
@@ -28,21 +28,21 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
     copyVector(&model.normals[i][2], &tmd_prim.n2);
 
     model.colors[i] = (CVECTOR*)malloc3(sizeof(CVECTOR) * 3);
-    model.colors[i][0].cd = model.polys[i].code;
-    model.colors[i][1].cd = model.polys[i].code;
-    model.colors[i][2].cd = model.polys[i].code;
+    model.colors[i][0].cd = model.gt3_polys[i].code;
+    model.colors[i][1].cd = model.gt3_polys[i].code;
+    model.colors[i][2].cd = model.gt3_polys[i].code;
 
     if (is_textured) {
-      setUV3(&model.polys[i], tmd_prim.u0, tmd_prim.v0,
+      setUV3(&model.gt3_polys[i], tmd_prim.u0, tmd_prim.v0,
         tmd_prim.u1, tmd_prim.v1,
         tmd_prim.u2, tmd_prim.v2);
 
       if (texture != NULL) {
-        model.polys[i].tpage = texture->tpage;
-        model.polys[i].clut = texture->clut;
+        model.gt3_polys[i].tpage = texture->tpage;
+        model.gt3_polys[i].clut = texture->clut;
       } else {
-        model.polys[i].tpage = tmd_prim.tpage;
-        model.polys[i].clut = tmd_prim.clut;
+        model.gt3_polys[i].tpage = tmd_prim.tpage;
+        model.gt3_polys[i].clut = tmd_prim.clut;
       }
 
       model.colors[i][0].r = 128;
