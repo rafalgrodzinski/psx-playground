@@ -35,6 +35,7 @@ video_Texture video_load_texture(struct cd_File file);
 void video_draw_sprite(struct sprite_Sprite sprite, int x, int y);
 void video_draw_model(struct model_Model model);
 void video_draw_poly_f4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal);
+void video_draw_poly_ft4(POLY_FT4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal);
 void video_draw_poly_gt3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]);
 
 #endif

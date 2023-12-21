@@ -109,13 +109,13 @@ model_Model model_create_cube(int size) {
 
   model.polys_count = 6;
 
-  model.f4_polys = (POLY_F4*)malloc3(sizeof(POLY_F4) * model.polys_count);
+  model.ft4_polys = (POLY_FT4*)malloc3(sizeof(POLY_FT4) * model.polys_count);
   model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * model.polys_count);
 
   for (i=0; i<model.polys_count; i++) {
-    SetPolyF4(&model.f4_polys[i]);
+    SetPolyFT4(&model.ft4_polys[i]);
 
     model.vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 4);
     copyVector(&model.vertices[i][0], &vertices[i][0]);
@@ -127,13 +127,56 @@ model_Model model_create_cube(int size) {
     copyVector(&model.normals[i][0], &normals[i][0]);
 
     model.colors[i] = (CVECTOR*)malloc3(sizeof(CVECTOR));
-    model.colors[i][0].cd = model.f4_polys[i].code;
+    model.colors[i][0].cd = model.ft4_polys[i].code;
     model.colors[i][0].r = 255;
     model.colors[i][0].g = 0;
     model.colors[i][0].b = 0;
   }
 
   printf("Created cube model of size %d\n", size);
+
+  return model;
+}
+
+model_Model model_create_plane(int size, CVECTOR color, video_Texture *texture) {
+  model_Model model;
+
+  model.polys_count = 1;
+
+  if (texture != NULL) {
+    model.poly_type = model_Poly_Type_FT4;
+    model.polys = malloc3(sizeof(POLY_FT4));
+    SetPolyFT4(&model.polys[0]);
+  } else {
+    model.poly_type = model_Poly_Type_F4;
+    model.polys = malloc3(sizeof(POLY_F4));
+    SetPolyF4((POLY_F4*)&model.polys[0]);
+  }
+  model.vertices = (SVECTOR**)malloc(sizeof(SVECTOR*));
+  model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*));
+  model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*));
+
+  model.vertices[0] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 4);
+  model.vertices[0][0] = (SVECTOR) { -size/2, 0, size/2, 0};
+  model.vertices[0][1] = (SVECTOR) { size/2, 0, size/2, 0};
+  model.vertices[0][2] = (SVECTOR) { -size/2, 0, -size/2, 0};
+  model.vertices[0][3] = (SVECTOR) { size/2, 0, -size/2, 0};
+
+  model.normals[0] = (SVECTOR*)malloc3(sizeof(SVECTOR));
+  model.normals[0][0] = (SVECTOR) { 0, -ONE, 0, 0};
+
+  model.colors[0] = (CVECTOR*)malloc3(sizeof(CVECTOR));
+  if (texture != NULL) {
+    model.colors[0][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_FT4*)&model.polys[0])->code };
+    setUVWH((POLY_FT4*)&model.polys[0], 0, 0, texture->prect.w, texture->prect.h);
+    ((POLY_FT4*)&model.polys[0])->tpage = texture->tpage;
+    ((POLY_FT4*)&model.polys[0])->clut = texture->clut;
+    //SetShadeTex(&model.polys[0], 1);
+  } else {
+    model.colors[0][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)&model.polys[0])->code };
+  }
+
+  printf("Created plane model of size %d\n", size);
 
   return model;
 }

@@ -19,8 +19,8 @@ VECTOR vec2 = {0, 0, 1024};
 SVECTOR ang2 = {0, 0, 0};
 
 cd_File file;
-model_Model model1, model2, model3, model4;
-video_Texture texture;
+model_Model model0, model1, model2, model3, model4;
+video_Texture texture0, texture, texture2;
 sprite_Sprite sprite1, sprite2;
 
 
@@ -37,11 +37,25 @@ int main() {
 
   video_set_light_color(ONE, ONE, ONE);
 
+
+  
   file = cd_load_file("\\EARTH4.TIM;1");
   texture = video_load_texture(file);
   cd_free_file(file);
   sprite1 = sprite_load_sprite(texture);
 
+  file = cd_load_file("\\FROG.TIM;1");
+  texture2 = video_load_texture(file);
+  cd_free_file(file);
+  //sprite2 = sprite_load_sprite(texture);
+
+  file = cd_load_file("\\CRATE.TIM;1");
+  texture0 = video_load_texture(file);
+  cd_free_file(file);
+  sprite1 = sprite_load_sprite(texture0);
+
+  model0 = model_create_plane(500, (CVECTOR) { 128, 128, 128}, &texture0);
+/*
   file = cd_load_file("\\EARTH.TMD;1");
   model1 = model_load_tmd(file, TRUE, &texture);
   cd_free_file(file);
@@ -78,10 +92,7 @@ int main() {
   model3 = model_load_tmd(file, TRUE, NULL);
   cd_free_file(file);
 
-  file = cd_load_file("\\FROG.TIM;1");
-  texture = video_load_texture(file);
-  cd_free_file(file);
-  sprite2 = sprite_load_sprite(texture);
+  */
 
   model4 = model_create_cube(50);
 
@@ -124,6 +135,9 @@ int main() {
 
     video_set_camera(vec, ang);
     video_init_frame();
+
+    video_draw_model(model0);
+    //video_draw_model(model4);
     
     //for (i=0; i<model1.count; i++)
     //  video_draw_poly3(&model1.polys[i], model1.vertices[i], model1.colors[i], model1.normals[i]);
@@ -136,10 +150,12 @@ int main() {
 
     //for (i=0; i<model4.polys_count; i++)
     //  video_draw_poly4(&model4.f4_polys[i], model4.vertices[i], model4.colors[i][0], model4.normals[i][0]);
-    video_draw_model(model3);
+    //video_draw_model(model3);
 
-    video_draw_sprite(sprite1, 0, 0);
-    video_draw_sprite(sprite2, 150, 150);
+    //video_draw_sprite(sprite1, 0, 0);
+    //video_draw_sprite(sprite2, 150, 150);
+    //
+    video_draw_sprite(sprite1, 10, 10);
 
     video_draw();
   }

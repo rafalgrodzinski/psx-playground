@@ -19,6 +19,7 @@
       <file name="giuli_tl.tim" type="data" source="data/giuli_tl.tim"/>
       <file name="giuli_pl.tim" type="data" source="data/giuli_pl.tim"/>
       <file name="giuli_fr.tim" type="data" source="data/giuli_fr.tim"/>
+      <file name="crate.tim" type="data" source="data/crate.tim"/>
       <dummy sectors="1024"/>
     </directory_tree> 
   </track>
