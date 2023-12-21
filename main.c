@@ -19,7 +19,7 @@ VECTOR vec2 = {0, 0, 1024};
 SVECTOR ang2 = {0, 0, 0};
 
 cd_File file;
-model_Model model1, model2, model3;
+model_Model model1, model2, model3, model4;
 video_Texture texture;
 sprite_Sprite sprite1, sprite2;
 
@@ -83,6 +83,8 @@ int main() {
   cd_free_file(file);
   sprite2 = sprite_load_sprite(texture);
 
+  model4 = model_create_cube(50);
+
   while(1) {
     if (pad_is_pressed(PAD_1, PAD_UP))
       vec.vy -= 32;
@@ -129,8 +131,11 @@ int main() {
     //for (i=0; i<model2.count; i++)
     //  video_draw_poly3(&model2.polys[i], model2.vertices[i], model2.colors[i], model2.normals[i]);
 
-    for (i=0; i<model3.polys_count; i++)
-      video_draw_poly3(&model3.polys[i], model3.vertices[i], model3.colors[i], model3.normals[i]);
+    //for (i=0; i<model3.polys_count; i++)
+    //  video_draw_poly3(&model3.polys[i], model3.vertices[i], model3.colors[i], model3.normals[i]);
+
+    for (i=0; i<model4.polys_count; i++)
+      video_draw_poly4(&model4.f4_polys[i], model4.vertices[i], model4.colors[i][0], model4.normals[i][0]);
 
     video_draw_sprite(sprite1, 0, 0);
     video_draw_sprite(sprite2, 150, 150);

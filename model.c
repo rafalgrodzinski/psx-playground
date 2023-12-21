@@ -2,114 +2,6 @@
 #include "video.h"
 #include "cd.h"
 
-model_Cube model_cube(short size, u_char r, u_char g, u_char b) {
-  model_Cube model;
-  
-  // 0
-  SetPolyF4(&model.poly[0]);
-  setVector(&model.vertices[0][0], -size, -size, -size);
-  setVector(&model.vertices[0][1], +size, -size, -size);
-  setVector(&model.vertices[0][2], -size, +size, -size);
-  setVector(&model.vertices[0][3], +size, +size, -size);
-
-  model.normal[0].vx = 0;
-  model.normal[0].vy = 0;
-  model.normal[0].vz = ONE;
-  model.normal[0].pad = 0;
-
-  model.color[0].cd = model.poly[0].code;
-  model.color[0].r = r;
-  model.color[0].g = g;
-  model.color[0].b = b;
-
-  // 1
-  SetPolyF4(&model.poly[1]);
-  setVector(&model.vertices[1][0], +size, -size, -size);
-  setVector(&model.vertices[1][1], +size, -size, +size);
-  setVector(&model.vertices[1][2], +size, +size, -size);
-  setVector(&model.vertices[1][3], +size, +size, +size);
-
-  model.normal[1].vx = -ONE;
-  model.normal[1].vy = 0;
-  model.normal[1].vz = 0;
-  model.normal[1].pad = 0;
-
-  model.color[1].cd = model.poly[1].code;
-  model.color[1].r = r;
-  model.color[1].g = g;
-  model.color[1].b = b;
-
-  // 2
-  SetPolyF4(&model.poly[2]);
-  setVector(&model.vertices[2][0], +size, -size, +size);
-  setVector(&model.vertices[2][1], -size, -size, +size);
-  setVector(&model.vertices[2][2], +size, +size, +size);
-  setVector(&model.vertices[2][3], -size, +size, +size);
-
-  model.normal[2].vx = 0;
-  model.normal[2].vy = 0;
-  model.normal[2].vz = -ONE;
-  model.normal[2].pad = 0;
-
-  model.color[2].cd = model.poly[2].code;
-  model.color[2].r = r;
-  model.color[2].g = g;
-  model.color[2].b = b;
-
-  // 3
-  SetPolyF4(&model.poly[3]);
-  setVector(&model.vertices[3][0], -size, -size, +size);
-  setVector(&model.vertices[3][1], -size, -size, -size);
-  setVector(&model.vertices[3][2], -size, +size, +size);
-  setVector(&model.vertices[3][3], -size, +size, -size);
-
-  model.normal[3].vx = ONE;
-  model.normal[3].vy = 0;
-  model.normal[3].vz = 0;
-  model.normal[3].pad = 0;
-
-  model.color[3].cd = model.poly[3].code;
-  model.color[3].r = r;
-  model.color[3].g = g;
-  model.color[3].b = b;
-
-  // 4
-  SetPolyF4(&model.poly[4]);
-  setVector(&model.vertices[4][0], -size, -size, +size);
-  setVector(&model.vertices[4][1], +size, -size, +size);
-  setVector(&model.vertices[4][2], -size, -size, -size);
-  setVector(&model.vertices[4][3], +size, -size, -size);
-
-  model.normal[4].vx = 0;
-  model.normal[4].vy = ONE;
-  model.normal[4].vz = 0;
-  model.normal[4].pad = 0;
-
-  model.color[4].cd = model.poly[4].code;
-  model.color[4].r = r;
-  model.color[4].g = g;
-  model.color[4].b = b;
-
-  // 5
-  SetPolyF4(&model.poly[5]);
-  setVector(&model.vertices[5][0], -size, +size, -size);
-  setVector(&model.vertices[5][1], +size, +size, -size);
-  setVector(&model.vertices[5][2], -size, +size, +size);
-  setVector(&model.vertices[5][3], +size, +size, +size);
-
-  model.normal[5].vx = 0;
-  model.normal[5].vy = -ONE;
-  model.normal[5].vz = 0;
-  model.normal[5].pad = 0;
-
-  model.color[5].cd = model.poly[5].code;
-  model.color[5].r = r;
-  model.color[5].g = g;
-  model.color[5].b = b;
-
-  return model;
-}
-
 model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *texture) {
   model_Model model;
   TMD_PRIM tmd_prim;
@@ -117,7 +9,7 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
 
   model.polys_count = OpenTMD(file.buffer, 0);
 
-  model.polys = (POLY_GT3 *)malloc3(sizeof(POLY_GT3) * model.polys_count);
+  model.polys = (POLY_GT3*)malloc3(sizeof(POLY_GT3) * model.polys_count);
   model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * model.polys_count);
@@ -184,3 +76,64 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
   return model;
 }
 
+model_Model model_create_cube(int size) {
+  model_Model model;
+  int i;
+  SVECTOR p0 = { -size/2, -size/2, -size/2, 0 };
+  SVECTOR p1 = { size/2, -size/2, -size/2, 0 };
+  SVECTOR p2 = { size/2, size/2, -size/2, 0 };
+  SVECTOR p3 = { -size/2, size/2, -size/2, 0 };
+
+  SVECTOR p4 = { -size/2, -size/2, size/2, 0 };
+  SVECTOR p5 = { size/2, -size/2, size/2, 0 };
+  SVECTOR p6 = { size/2, size/2, size/2, 0 };
+  SVECTOR p7 = { -size/2, size/2, size/2, 0 };
+
+  SVECTOR n0 = { ONE, 0, 0, 0};
+  SVECTOR n1 = { -ONE, 0, 0, 0};
+  SVECTOR n2 = { 0, ONE, 0, 0};
+  SVECTOR n3 = { 0, -ONE, 0, 0};
+  SVECTOR n4 = { 0, 0, ONE, 0};
+  SVECTOR n5 = { 0, 0, -ONE, 0};
+
+  SVECTOR vertices[6][4] = {
+    { p0, p1, p3, p2 },
+    { p1, p5, p2, p6 },
+    { p5, p4, p6, p7 },
+    { p4, p0, p7, p3 },
+    { p4, p5, p0, p1 },
+    { p6, p7, p2, p3 }
+  };
+
+  SVECTOR *normals[6] = { &n5, &n0, &n4, &n1, &n3, &n2 };
+
+  model.polys_count = 6;
+
+  model.f4_polys = (POLY_F4*)malloc3(sizeof(POLY_F4) * model.polys_count);
+  model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
+  model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
+  model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * model.polys_count);
+
+  for (i=0; i<model.polys_count; i++) {
+    SetPolyF4(&model.f4_polys[i]);
+
+    model.vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 4);
+    copyVector(&model.vertices[i][0], &vertices[i][0]);
+    copyVector(&model.vertices[i][1], &vertices[i][1]);
+    copyVector(&model.vertices[i][2], &vertices[i][2]);
+    copyVector(&model.vertices[i][3], &vertices[i][3]);
+
+    model.normals[i] = (SVECTOR*)malloc3(sizeof(SVECTOR));
+    copyVector(&model.normals[i][0], &normals[i][0]);
+
+    model.colors[i] = (CVECTOR*)malloc3(sizeof(CVECTOR));
+    model.colors[i][0].cd = model.f4_polys[i].code;
+    model.colors[i][0].r = 255;
+    model.colors[i][0].g = 0;
+    model.colors[i][0].b = 0;
+  }
+
+  printf("Created cube model of size %d\n", size);
+
+  return model;
+}
