@@ -37,7 +37,7 @@ int main() {
 
   video_set_light_color(ONE, ONE, ONE);
 
-  file = cd_load_file("\\EARTH8.TIM;1");
+  file = cd_load_file("\\EARTH4.TIM;1");
   texture = video_load_texture(file);
   cd_free_file(file);
   sprite1 = sprite_load_sprite(texture);
@@ -130,7 +130,7 @@ DrawSync(0);
     //for (i=0; i<model2.count; i++)
     //  video_draw_poly3(&model2.polys[i], model2.vertices[i], model2.colors[i], model2.normals[i]);
 
-    for (i=0; i<model3.count; i++)
+    for (i=0; i<model3.polys_count; i++)
       video_draw_poly3(&model3.polys[i], model3.vertices[i], model3.colors[i], model3.normals[i]);
 
     video_draw_sprite(sprite1, 0, 0);

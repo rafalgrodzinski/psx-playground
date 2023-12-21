@@ -2,11 +2,13 @@
 #include "sprite.h"
 #include "cd.h"
 
+#define OT_SIZE 4096
+
 DISPENV disp[2];
 DRAWENV draw[2];
 
 u_long ot[2][OT_SIZE];
-BOOL currentBuffer;
+BOOL current_buffer;
 MATRIX cameraMatrix;
 
 void video_init(int mode) {
@@ -64,7 +66,7 @@ void video_init_frame() {
   SetTransMatrix(&cameraMatrix);
   SetRotMatrix(&cameraMatrix);
 
-  ClearOTag(ot[currentBuffer], OT_SIZE);
+  ClearOTag(ot[current_buffer], OT_SIZE);
 }
 
 void video_set_camera(VECTOR offset, SVECTOR angle) {
@@ -99,21 +101,15 @@ video_Texture video_load_texture(cd_File file) {
 
   OpenTIM((u_long*)file.buffer);
   ReadTIM(&tim);
-  //LoadImage(texture.tim.prect, texture.tim.paddr);
   LoadImage(tim.prect, tim.paddr);
-  DrawSync(0);
-  //texture.tpage = getTPage(texture.tim.mode, 2, texture.tim.prect->x, texture.tim.prect->y);
-  texture.tpage = getTPage(tim.mode, 2, tim.prect->x, tim.prect->y);
+  // Transparency rate 1
+  texture.tpage = getTPage(tim.mode, 1, tim.prect->x, tim.prect->y);
 
-  if (tim.caddr) {
-    //LoadImage(tim.crect, tim.caddr);
-  //DrawSync(0);
+  if (tim.caddr)
     texture.clut = LoadClut(tim.caddr, tim.crect->x, tim.crect->y);
-  }
+
   texture.prect = *tim.prect;
-  texture.crect = *tim.crect;
   texture.mode = tim.mode;
-  texture.caddr = tim.caddr;
 
   printf("Loaded texture, x: %d y: %d w: %d h: %d mode: %d\n", tim.prect->x, tim.prect->y, tim.prect->w, tim.prect->h, tim.mode);
 
@@ -124,19 +120,19 @@ void video_draw() {
   DrawSync(0);
   VSync(0);
 
-  PutDispEnv(&disp[currentBuffer]);
-  PutDrawEnv(&draw[currentBuffer]);
+  PutDispEnv(&disp[current_buffer]);
+  PutDrawEnv(&draw[current_buffer]);
 
-  DrawOTag(ot[currentBuffer]); 
+  DrawOTag(ot[current_buffer]); 
   DrawSync(0);
 
-  currentBuffer = !currentBuffer;
+  current_buffer = !current_buffer;
 }
 
 void video_draw_sprite(sprite_Sprite sprite, int x, int y) {
   setXY0(sprite.sprite, x, y);
-  AddPrim(ot[currentBuffer], sprite.sprite);
-  AddPrim(ot[currentBuffer], sprite.tpage_change);
+  AddPrim(ot[current_buffer], sprite.sprite);
+  AddPrim(ot[current_buffer], sprite.tpage_change);
 }
 
 void video_draw_poly4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {
@@ -148,7 +144,7 @@ void video_draw_poly4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR
     &dummy1, &otz, &dummy2);
   if (outerProduct > 0) {
     NormalColorCol(&normal, &color, &poly->r0);
-    AddPrim(ot[currentBuffer] + OT_SIZE - otz, poly);
+    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
   }
 }
 
@@ -163,7 +159,7 @@ void video_draw_poly3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SV
     NormalColorCol(&normals[0], &colors[0], &poly->r0);
     NormalColorCol(&normals[1], &colors[1], &poly->r1);
     NormalColorCol(&normals[2], &colors[2], &poly->r2);
-    AddPrim(ot[currentBuffer] + OT_SIZE - otz, poly);
+    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
   }
 }
 

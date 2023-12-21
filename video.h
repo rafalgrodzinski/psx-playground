@@ -10,19 +10,15 @@
 
 #define VIDEO_LOW_RES 0
 #define VIDEO_HI_RES 1
-#define OT_SIZE 4096
 
 struct sprite_Sprite;
 struct cd_File;
 
 typedef struct video_Texture {
-  //TIM_IMAGE tim;
   RECT prect;
-  RECT crect;
   u_short tpage;
   u_short clut;
   u_long mode;
-  u_long caddr;
 } video_Texture;
 
 void video_init(int mode);

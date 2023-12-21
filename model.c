@@ -112,21 +112,17 @@ model_Cube model_cube(short size, u_char r, u_char g, u_char b) {
 
 model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *texture) {
   model_Model model;
-
-  long polys_count;
-  long number = 0;
   TMD_PRIM tmd_prim;
   int i;
 
-  polys_count = OpenTMD(file.buffer, 0);
+  model.polys_count = OpenTMD(file.buffer, 0);
 
-  model.count = polys_count;
-  model.polys = (POLY_GT3 *)malloc3(sizeof(POLY_GT3) * polys_count);
-  model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * polys_count);
-  model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * polys_count);
-  model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * polys_count);
+  model.polys = (POLY_GT3 *)malloc3(sizeof(POLY_GT3) * model.polys_count);
+  model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
+  model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
+  model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * model.polys_count);
 
-  for (i=0; i<polys_count && ReadTMD(&tmd_prim); i++) {
+  for (i=0; i<model.polys_count && ReadTMD(&tmd_prim); i++) {
     SetPolyGT3(&model.polys[i]);
 
     model.vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 3);
@@ -145,7 +141,10 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
     model.colors[i][2].cd = model.polys[i].code;
 
     if (is_textured) {
-      setUV3(&model.polys[i], tmd_prim.u0, tmd_prim.v0, tmd_prim.u1, tmd_prim.v1, tmd_prim.u2, tmd_prim.v2);
+      setUV3(&model.polys[i], tmd_prim.u0, tmd_prim.v0,
+        tmd_prim.u1, tmd_prim.v1,
+        tmd_prim.u2, tmd_prim.v2);
+
       if (texture != NULL) {
         model.polys[i].tpage = texture->tpage;
         model.polys[i].clut = texture->clut;
@@ -178,11 +177,9 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
       model.colors[i][2].g = tmd_prim.g2;
       model.colors[i][2].b = tmd_prim.b2;
     }
-
-    //SetSemiTrans(&model.polys[i], 0);
   }
 
-  printf("Loaded model, poly count: %d\n", polys_count);
+  printf("Loaded model, polys count: %d\n", model.polys_count);
 
   return model;
 }

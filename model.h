@@ -10,7 +10,7 @@ struct video_Texture;
 struct cd_File;
 
 typedef struct model_Model {
-  int count;
+  int polys_count;
   POLY_GT3 *polys;
   SVECTOR **vertices;
   SVECTOR **normals;
