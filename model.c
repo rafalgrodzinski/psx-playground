@@ -76,9 +76,11 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
   return model;
 }
 
-model_Model model_create_cube(int size) {
+model_Model model_create_cube(int size, CVECTOR color, video_Texture *texture) {
   model_Model model;
   int i;
+  void *poly;
+
   SVECTOR p0 = { -size/2, -size/2, -size/2, 0 };
   SVECTOR p1 = { size/2, -size/2, -size/2, 0 };
   SVECTOR p2 = { size/2, size/2, -size/2, 0 };
@@ -109,14 +111,18 @@ model_Model model_create_cube(int size) {
 
   model.polys_count = 6;
 
-  model.ft4_polys = (POLY_FT4*)malloc3(sizeof(POLY_FT4) * model.polys_count);
+  if (texture != NULL) {
+    model.poly_type = model_Poly_Type_FT4;
+    model.polys = malloc3(sizeof(POLY_FT4) * model.polys_count);
+  } else {
+    model.poly_type = model_Poly_Type_F4;
+    model.polys = malloc3(sizeof(POLY_F4) * model.polys_count);
+  }
   model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * model.polys_count);
 
   for (i=0; i<model.polys_count; i++) {
-    SetPolyFT4(&model.ft4_polys[i]);
-
     model.vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 4);
     copyVector(&model.vertices[i][0], &vertices[i][0]);
     copyVector(&model.vertices[i][1], &vertices[i][1]);
@@ -124,13 +130,23 @@ model_Model model_create_cube(int size) {
     copyVector(&model.vertices[i][3], &vertices[i][3]);
 
     model.normals[i] = (SVECTOR*)malloc3(sizeof(SVECTOR));
-    copyVector(&model.normals[i][0], &normals[i][0]);
+    copyVector(&model.normals[i][0], normals[i]);
 
     model.colors[i] = (CVECTOR*)malloc3(sizeof(CVECTOR));
-    model.colors[i][0].cd = model.ft4_polys[i].code;
-    model.colors[i][0].r = 255;
-    model.colors[i][0].g = 0;
-    model.colors[i][0].b = 0;
+    if (texture != NULL) {
+      poly = &((POLY_FT4*)model.polys)[i];
+      SetPolyFT4((POLY_FT4*)poly);
+      model.colors[i][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_FT4*)poly)->code };
+      setUVWH((POLY_FT4*)poly, 0, 0, texture->prect.w, texture->prect.h);
+      ((POLY_FT4*)poly)->tpage = texture->tpage;
+      //if (texture->mode & 0x2)
+      ((POLY_FT4*)poly)->clut = texture->clut;
+      SetShadeTex((POLY_FT4*)poly, 1);
+    } else {
+      poly = &((POLY_F4*)model.polys)[i];
+      SetPolyF4((POLY_F4*)poly);
+      model.colors[i][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)poly)->code };
+    }
   }
 
   printf("Created cube model of size %d\n", size);
@@ -150,7 +166,7 @@ model_Model model_create_plane(int size, CVECTOR color, video_Texture *texture) 
   } else {
     model.poly_type = model_Poly_Type_F4;
     model.polys = malloc3(sizeof(POLY_F4));
-    SetPolyF4((POLY_F4*)&model.polys[0]);
+    SetPolyF4(&model.polys[0]);
   }
   model.vertices = (SVECTOR**)malloc(sizeof(SVECTOR*));
   model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*));

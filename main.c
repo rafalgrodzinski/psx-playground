@@ -28,7 +28,9 @@ int main() {
   int i;
 
   // Allocate 1 MiB of heap, leave 64 KiB for stack
+  EnterCriticalSection();
   InitHeap3((void*)0x800f0000, 0x00100000);
+  ExitCriticalSection();
 
   video_init(VIDEO_HI_RES);
   audio_init();
@@ -37,9 +39,7 @@ int main() {
 
   video_set_light_color(ONE, ONE, ONE);
 
-
-  
-  file = cd_load_file("\\EARTH4.TIM;1");
+  file = cd_load_file("\\EARTH8.TIM;1");
   texture = video_load_texture(file);
   cd_free_file(file);
   sprite1 = sprite_load_sprite(texture);
@@ -54,7 +54,7 @@ int main() {
   cd_free_file(file);
   sprite1 = sprite_load_sprite(texture0);
 
-  model0 = model_create_plane(500, (CVECTOR) { 128, 128, 128}, &texture0);
+  model0 = model_create_plane(500, (CVECTOR) { 128, 128, 128, 0}, &texture2);
 /*
   file = cd_load_file("\\EARTH.TMD;1");
   model1 = model_load_tmd(file, TRUE, &texture);
@@ -94,7 +94,7 @@ int main() {
 
   */
 
-  model4 = model_create_cube(50);
+  model4 = model_create_cube(50, (CVECTOR) { 128, 0, 0 }, NULL);
 
   while(1) {
     if (pad_is_pressed(PAD_1, PAD_UP))
@@ -136,7 +136,7 @@ int main() {
     video_set_camera(vec, ang);
     video_init_frame();
 
-    video_draw_model(model0);
+    video_draw_model(model4);
     //video_draw_model(model4);
     
     //for (i=0; i<model1.count; i++)
@@ -155,7 +155,7 @@ int main() {
     //video_draw_sprite(sprite1, 0, 0);
     //video_draw_sprite(sprite2, 150, 150);
     //
-    video_draw_sprite(sprite1, 10, 10);
+    //video_draw_sprite(sprite1, 10, 10);
 
     video_draw();
   }

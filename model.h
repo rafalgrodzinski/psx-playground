@@ -18,7 +18,6 @@ typedef struct model_Model {
   model_Poly_Type poly_type;
   int polys_count;
   void *polys;
-  POLY_FT4 *ft4_polys;
   POLY_GT3 *gt3_polys;
   SVECTOR **vertices;
   SVECTOR **normals;
@@ -26,7 +25,7 @@ typedef struct model_Model {
 } model_Model;
 
 model_Model model_load_tmd(struct cd_File file, BOOL is_textured, struct video_Texture *texture);
-model_Model model_create_cube(int size);
+model_Model model_create_cube(int size, CVECTOR color, struct video_Texture *texture);
 model_Model model_create_plane(int size, CVECTOR color, struct video_Texture *texture);
 
 #endif
