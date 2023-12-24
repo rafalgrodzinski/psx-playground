@@ -115,13 +115,16 @@ video_Texture video_load_texture(cd_File file) {
   ReadTIM(&tim);
   LoadImage(tim.prect, tim.paddr);
   // Transparency rate 1
-  texture.tpage = getTPage(tim.mode, 1, tim.prect->x, tim.prect->y);
+  texture.tpage = getTPage(tim.mode, 0, tim.prect->x, tim.prect->y);
 
-  if (tim.caddr)
+  if (tim.caddr) {
     texture.clut = LoadClut(tim.caddr, tim.crect->x, tim.crect->y);
+  }
 
   texture.prect = *tim.prect;
   texture.mode = tim.mode;
+
+  printf("mode: 0x%x, clut: 0x%x\n", texture.mode, texture.clut);
 
   printf("Loaded texture, x: %d y: %d w: %d h: %d mode: %d\n", tim.prect->x, tim.prect->y, tim.prect->w, tim.prect->h, tim.mode);
 
@@ -138,7 +141,12 @@ void video_draw_model(model_Model model) {
   int i;
   void *poly;
 
-  if (model.poly_type == model_Poly_Type_F4) {
+  if (model.poly_type == model_Poly_Type_GT3) {
+    for (i=0; i<model.polys_count; i++) {
+      poly = &((POLY_GT3*)model.polys)[i];
+      video_draw_poly_gt3(poly, model.vertices[i], model.colors[i], model.normals[i]);
+    }
+  } else if (model.poly_type == model_Poly_Type_F4) {
     for (i=0; i<model.polys_count; i++) {
       poly = &((POLY_F4*)model.polys)[i];
       video_draw_poly_f4(poly, model.vertices[i], model.colors[i][0], model.normals[i][0]);
@@ -179,11 +187,11 @@ void video_draw_poly_ft4(POLY_FT4 *poly, SVECTOR vertices[4], CVECTOR color, SVE
 
 void video_draw_poly_gt3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]) {
   long outerProduct, otz;
-  long dummy1, dummy2;
+  long tmp;
 
   outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
     &poly->x0, &poly->x1, &poly->x2,
-    &dummy1, &otz, &dummy2);
+    &tmp, &otz, &tmp);
   if (outerProduct > 0) {
     NormalColorCol(&normals[0], &colors[0], &poly->r0);
     NormalColorCol(&normals[1], &colors[1], &poly->r1);

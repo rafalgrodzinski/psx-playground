@@ -2,20 +2,23 @@
 #include "video.h"
 #include "cd.h"
 
-model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *texture) {
+model_Model model_load_tmd(cd_File file, CVECTOR color, video_Texture *texture) {
   model_Model model;
   TMD_PRIM tmd_prim;
+  void *poly;
   int i;
 
   model.polys_count = OpenTMD(file.buffer, 0);
 
-  model.gt3_polys = (POLY_GT3*)malloc3(sizeof(POLY_GT3) * model.polys_count);
+  model.poly_type = model_Poly_Type_GT3;
+  model.polys = malloc3(sizeof(POLY_GT3) * model.polys_count);
   model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * model.polys_count);
 
   for (i=0; i<model.polys_count && ReadTMD(&tmd_prim); i++) {
-    SetPolyGT3(&model.gt3_polys[i]);
+    poly = &((POLY_GT3*)model.polys)[i];
+    SetPolyGT3((POLY_GT3*)poly);
 
     model.vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 3);
     copyVector(&model.vertices[i][0], &tmd_prim.x0);
@@ -28,46 +31,21 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
     copyVector(&model.normals[i][2], &tmd_prim.n2);
 
     model.colors[i] = (CVECTOR*)malloc3(sizeof(CVECTOR) * 3);
-    model.colors[i][0].cd = model.gt3_polys[i].code;
-    model.colors[i][1].cd = model.gt3_polys[i].code;
-    model.colors[i][2].cd = model.gt3_polys[i].code;
+    model.colors[i][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_GT3*)poly)->code };
+    model.colors[i][1] = (CVECTOR) { color.r, color.g, color.b, ((POLY_GT3*)poly)->code };
+    model.colors[i][2] = (CVECTOR) { color.r, color.g, color.b, ((POLY_GT3*)poly)->code };
 
-    if (is_textured) {
-      setUV3(&model.gt3_polys[i], tmd_prim.u0, tmd_prim.v0,
-        tmd_prim.u1, tmd_prim.v1,
-        tmd_prim.u2, tmd_prim.v2);
+    setUV3((POLY_GT3*)poly, 
+      tmd_prim.u0, tmd_prim.v0,
+      tmd_prim.u1, tmd_prim.v1,
+      tmd_prim.u2, tmd_prim.v2);
 
-      if (texture != NULL) {
-        model.gt3_polys[i].tpage = texture->tpage;
-        model.gt3_polys[i].clut = texture->clut;
-      } else {
-        model.gt3_polys[i].tpage = tmd_prim.tpage;
-        model.gt3_polys[i].clut = tmd_prim.clut;
-      }
-
-      model.colors[i][0].r = 128;
-      model.colors[i][0].g = 128;
-      model.colors[i][0].b = 128;
-
-      model.colors[i][1].r = 128;
-      model.colors[i][1].g = 128;
-      model.colors[i][1].b = 128;
-
-      model.colors[i][2].r = 128;
-      model.colors[i][2].g = 128;
-      model.colors[i][2].b = 128;
+    if (texture != NULL) {
+      ((POLY_GT3*)poly)->tpage = texture->tpage;
+      ((POLY_GT3*)poly)->clut = texture->clut;
     } else {
-      model.colors[i][0].r = tmd_prim.r0;
-      model.colors[i][0].g = tmd_prim.g0;
-      model.colors[i][0].b = tmd_prim.b0;
-
-      model.colors[i][1].r = tmd_prim.r1;
-      model.colors[i][1].g = tmd_prim.g1;
-      model.colors[i][1].b = tmd_prim.b1;
-
-      model.colors[i][2].r = tmd_prim.r2;
-      model.colors[i][2].g = tmd_prim.g2;
-      model.colors[i][2].b = tmd_prim.b2;
+      ((POLY_GT3*)poly)->tpage = tmd_prim.tpage;
+      ((POLY_GT3*)poly)->clut = tmd_prim.clut;
     }
   }
 
@@ -78,8 +56,8 @@ model_Model model_load_tmd(cd_File file, BOOL is_textured, video_Texture *textur
 
 model_Model model_create_cube(int size, CVECTOR color, video_Texture *texture) {
   model_Model model;
-  int i;
   void *poly;
+  int i;
 
   SVECTOR p0 = { -size/2, -size/2, -size/2, 0 };
   SVECTOR p1 = { size/2, -size/2, -size/2, 0 };
@@ -139,9 +117,8 @@ model_Model model_create_cube(int size, CVECTOR color, video_Texture *texture) {
       model.colors[i][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_FT4*)poly)->code };
       setUVWH((POLY_FT4*)poly, 0, 0, texture->prect.w, texture->prect.h);
       ((POLY_FT4*)poly)->tpage = texture->tpage;
-      //if (texture->mode & 0x2)
       ((POLY_FT4*)poly)->clut = texture->clut;
-      SetShadeTex((POLY_FT4*)poly, 1);
+      //SetShadeTex((POLY_FT4*)poly, 1);
     } else {
       poly = &((POLY_F4*)model.polys)[i];
       SetPolyF4((POLY_F4*)poly);

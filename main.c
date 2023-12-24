@@ -44,25 +44,26 @@ int main() {
   cd_free_file(file);
   sprite1 = sprite_load_sprite(texture);
 
-  file = cd_load_file("\\FROG.TIM;1");
-  texture2 = video_load_texture(file);
-  cd_free_file(file);
+  //file = cd_load_file("\\FROG.TIM;1");
+  //texture2 = video_load_texture(file);
+  //cd_free_file(file);
   //sprite2 = sprite_load_sprite(texture);
 
-  file = cd_load_file("\\CRATE.TIM;1");
-  texture0 = video_load_texture(file);
-  cd_free_file(file);
-  sprite1 = sprite_load_sprite(texture0);
+  //file = cd_load_file("\\CRATE.TIM;1");
+  //texture0 = video_load_texture(file);
+  //cd_free_file(file);
+  //sprite2 = sprite_load_sprite(texture0);
 
-  model0 = model_create_plane(500, (CVECTOR) { 128, 128, 128, 0}, &texture2);
-/*
+  //model0 = model_create_plane(500, (CVECTOR) { 128, 128, 128, 0}, &texture0);
+
   file = cd_load_file("\\EARTH.TMD;1");
-  model1 = model_load_tmd(file, TRUE, &texture);
+  model1 = model_load_tmd(file, (CVECTOR) { 128, 128, 128, 0 } , &texture);
   cd_free_file(file);
 
-  file = cd_load_file("\\DINO.TMD;1");
+  /*file = cd_load_file("\\DINO.TMD;1");
   model2 = model_load_tmd(file, TRUE, &texture);
   cd_free_file(file);
+  */
 
   file = cd_load_file("\\GIULI_TR.TIM;1");
   video_load_texture(file);
@@ -89,12 +90,8 @@ int main() {
   cd_free_file(file);
 
   file = cd_load_file("\\GIULIETA.TMD;1");
-  model3 = model_load_tmd(file, TRUE, NULL);
+  model3 = model_load_tmd(file, (CVECTOR) { 128, 128, 128 } , &texture);
   cd_free_file(file);
-
-  */
-
-  model4 = model_create_cube(50, (CVECTOR) { 128, 0, 0 }, NULL);
 
   while(1) {
     if (pad_is_pressed(PAD_1, PAD_UP))
@@ -136,8 +133,13 @@ int main() {
     video_set_camera(vec, ang);
     video_init_frame();
 
-    video_draw_model(model4);
     //video_draw_model(model4);
+    //video_draw_model(model0);
+    video_draw_model(model3);
+    video_draw_model(model1);
+
+    //video_draw_model(model4);
+
     
     //for (i=0; i<model1.count; i++)
     //  video_draw_poly3(&model1.polys[i], model1.vertices[i], model1.colors[i], model1.normals[i]);
@@ -155,7 +157,7 @@ int main() {
     //video_draw_sprite(sprite1, 0, 0);
     //video_draw_sprite(sprite2, 150, 150);
     //
-    //video_draw_sprite(sprite1, 10, 10);
+    //video_draw_sprite(sprite2, 10, 10);
 
     video_draw();
   }
