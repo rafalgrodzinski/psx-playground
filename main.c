@@ -4,6 +4,7 @@
 #include <libgte.h>
 #include <libgpu.h>
 
+#include "core.h"
 #include "types.h"
 #include "video.h"
 #include "audio.h"
@@ -27,17 +28,7 @@ sprite_Sprite sprite1, sprite2;
 int main() {
   int i;
 
-  // Allocate 1 MiB of heap, leave 64 KiB for stack
-  EnterCriticalSection();
-  InitHeap3((void*)0x800f0000, 0x00100000);
-  ExitCriticalSection();
-
-  video_init(VIDEO_HI_RES);
-  audio_init();
-  pad_init();
-  cd_init();
-
-  video_set_light_color(ONE, ONE, ONE);
+  core_init_all(VIDEO_HI_RES);
 
   file = cd_load_file("\\EARTH8.TIM;1");
   texture = video_load_texture(file);

@@ -1,7 +1,10 @@
-all: video.obj audio.obj pad.obj cd.obj sprite.obj model.obj
+all: core.obj video.obj audio.obj pad.obj cd.obj sprite.obj model.obj
 	ccpsx -Xo$80010000 *.obj lib/mmgmnew.obj main.c -o main.cpe
 	cpe2x main.cpe
 	mkpsxiso -y test.xml
+
+core.obj:
+	ccpsx -c core.c
 
 video.obj:
 	ccpsx -c video.c
