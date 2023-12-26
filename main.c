@@ -28,7 +28,7 @@ sprite_Sprite sprite1, sprite2;
 int main() {
   int i;
 
-  core_init_all(VIDEO_HI_RES);
+  core_init_all(VIDEO_LOW_RES, (CVECTOR) { 20, 20, 20 }, FPS_LIMIT_NONE, TRUE);
 
   file = cd_load_file("\\EARTH8.TIM;1");
   texture = video_load_texture(file);
@@ -81,7 +81,7 @@ int main() {
   cd_free_file(file);
 
   file = cd_load_file("\\GIULIETA.TMD;1");
-  model3 = model_load_tmd(file, (CVECTOR) { 128, 128, 128 } , &texture);
+  model3 = model_load_tmd(file, (CVECTOR) { 128, 128, 128 } , NULL);
   cd_free_file(file);
 
   while(1) {
@@ -127,7 +127,7 @@ int main() {
     //video_draw_model(model4);
     //video_draw_model(model0);
     video_draw_model(model3);
-    video_draw_model(model1);
+    //video_draw_model(model1);
 
     //video_draw_model(model4);
 

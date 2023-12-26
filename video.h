@@ -10,6 +10,10 @@
 #define VIDEO_LOW_RES 0
 #define VIDEO_HI_RES 1
 
+#define FPS_LIMIT_30 2
+#define FPS_LIMIT_60 0
+#define FPS_LIMIT_NONE 1
+
 struct sprite_Sprite;
 struct model_Model;
 struct cd_File;
@@ -21,7 +25,7 @@ typedef struct video_Texture {
   u_long mode;
 } video_Texture;
 
-void video_init(int mode);
+void video_init(int mode, CVECTOR background_color, int fps_limit, BOOL should_show_fps);
 void video_init_frame();
 void video_draw();
 

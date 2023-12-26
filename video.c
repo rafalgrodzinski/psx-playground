@@ -12,16 +12,33 @@ u_long ot[2][OT_SIZE];
 BOOL current_buffer;
 MATRIX cameraMatrix;
 
-void video_init(int mode) {
+BOOL should_show_fps;
+int fps, frames_count, vsyncs_count;
+int fps_limit;
+
+void video_vsync_callback() {
+  vsyncs_count++;
+  if (vsyncs_count > 60) {
+    if (frames_count > 0)
+      fps = frames_count - 1;
+    frames_count = vsyncs_count = 0;
+  }
+}
+
+void video_init(int mode, CVECTOR background_color, int _fps_limit, BOOL _should_show_fps) {
   short width = 320;
   short height = 240;
   short offset = 240;
+  short text_offset = 8;
   BOOL is_interlaced = FALSE;
+  should_show_fps = _should_show_fps;
+  fps_limit = _fps_limit;
 
   if (mode == VIDEO_HI_RES) {
     width = 640;
     height = 480;
     offset = 0;
+    text_offset = 16;
     is_interlaced = TRUE;
   }
 
@@ -38,17 +55,22 @@ void video_init(int mode) {
   SetDefDrawEnv(&draw[0], 0, offset, width, height);
   SetDefDrawEnv(&draw[1], 0, 0, width, height);
 
-  setRGB0(&draw[0], 20, 20, 20);
-  setRGB0(&draw[1], 20, 20, 20);
+  setRGB0(&draw[0], background_color.r, background_color.g, background_color.b);
+  setRGB0(&draw[1], background_color.r, background_color.g, background_color.b);
 
   draw[0].isbg = 1;
   draw[0].dtd = 0;
   draw[1].isbg = 1;
   draw[1].dtd = 0;
 
+  FntLoad(960, 0);
+  SetDumpFnt(FntOpen(0, text_offset, 320, 224, 0, 100));
+
   InitGeom();
   SetGeomOffset(width / 2, height / 2);
   SetGeomScreen(1024);
+
+  VSyncCallback(video_vsync_callback);
 
   SetDispMask(1);
 }
@@ -68,15 +90,20 @@ void video_init_frame() {
   SetRotMatrix(&cameraMatrix);
 
   ClearOTag(ot[current_buffer], OT_SIZE);
+
+  if (should_show_fps) {
+    FntPrint("FPS: %d", fps);
+    FntFlush(-1);
+  }
 }
 
 void video_draw() {
+  frames_count++;
   DrawSync(0);
-  VSync(0);
+  VSync(fps_limit);
   PutDispEnv(&disp[current_buffer]);
   PutDrawEnv(&draw[current_buffer]);
   DrawOTag(ot[current_buffer]); 
-
   current_buffer = !current_buffer;
 }
 
@@ -125,7 +152,6 @@ video_Texture video_load_texture(cd_File file) {
   texture.mode = tim.mode;
 
   printf("mode: 0x%x, clut: 0x%x\n", texture.mode, texture.clut);
-
   printf("Loaded texture, x: %d y: %d w: %d h: %d mode: %d\n", tim.prect->x, tim.prect->y, tim.prect->w, tim.prect->h, tim.mode);
 
   return texture;

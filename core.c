@@ -11,9 +11,9 @@ void core_init() {
   ExitCriticalSection();
 }
 
-void core_init_all(int mode) {
+void core_init_all(int mode, CVECTOR background_color, int fps_limit, BOOL should_show_fps) {
   core_init();
-  video_init(mode);
+  video_init(mode, background_color, fps_limit, should_show_fps);
   audio_init();
   pad_init();
   cd_init();
