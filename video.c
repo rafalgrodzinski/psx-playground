@@ -10,13 +10,13 @@ DRAWENV draw[2];
 
 u_long ot[2][OT_SIZE];
 BOOL current_buffer;
-MATRIX cameraMatrix;
+MATRIX camera_matrix;
 
 BOOL should_show_fps;
 int fps, frames_count, vsyncs_count;
 int fps_limit;
 
-void video_vsync_callback() {
+static void video_vsync_callback() {
   vsyncs_count++;
   if (vsyncs_count > 60) {
     if (frames_count > 0)
@@ -76,18 +76,17 @@ void video_init(int mode, CVECTOR background_color, int _fps_limit, BOOL _should
 }
 
 void video_init_frame() {
-  MATRIX lightInputMatrix = {
+  MATRIX light_input_matrix = {
     ONE, -ONE, -ONE,
     0, 0, 0,
     0, 0, 0
   };
-  MATRIX lightMatrix;
+  MATRIX light_matrix;
 
-  MulMatrix0(&lightInputMatrix, &cameraMatrix, &lightMatrix);
-  SetLightMatrix(&lightMatrix);
-
-  SetTransMatrix(&cameraMatrix);
-  SetRotMatrix(&cameraMatrix);
+  PushMatrix();
+  MulMatrix0(&light_input_matrix, &camera_matrix, &light_matrix);
+  SetLightMatrix(&light_matrix);
+  PopMatrix();
 
   ClearOTag(ot[current_buffer], OT_SIZE);
 
@@ -107,31 +106,26 @@ void video_draw() {
   current_buffer = !current_buffer;
 }
 
-
 void video_set_camera(VECTOR offset, SVECTOR angle) {
-  RotMatrix(&angle, &cameraMatrix);
-  TransMatrix(&cameraMatrix, &offset);
-}
+  VECTOR output_vector;
 
-void video_set_local(VECTOR offset, SVECTOR angle) {
-  RotMatrix(&angle, &cameraMatrix);
-  TransMatrix(&cameraMatrix, &offset);
-  SetTransMatrix(&cameraMatrix);
-}
+  RotMatrix(&angle, &camera_matrix);
+  ApplyMatrixLV(&camera_matrix, &offset, &output_vector);
+  TransMatrix(&camera_matrix, &output_vector);
 
-void video_reset_local() {
-  PopMatrix();
+  SetTransMatrix(&camera_matrix);
+  SetRotMatrix(&camera_matrix);
 }
 
 void video_set_light_color(short r, short g, short b) {
-  MATRIX lightMatrix = {
+  MATRIX light_matrix = {
     r, 0, 0,
     g, 0, 0,
     b, 0, 0,
     0, 0, 0
   };
 
-  SetColorMatrix(&lightMatrix);
+  SetColorMatrix(&light_matrix);
 }
 
 video_Texture video_load_texture(cd_File file) {
@@ -183,6 +177,21 @@ void video_draw_model(model_Model model) {
       video_draw_poly_ft4(poly, model.vertices[i], model.colors[i][0], model.normals[i][0]);
     }
   }
+}
+
+void video_draw_object(model_Object object) {
+  MATRIX object_matrix, output_matrix;
+
+  PushMatrix();
+  RotMatrix(&object.angle, &object_matrix);
+  TransMatrix(&object_matrix, &object.offset);
+  CompMatrixLV(&camera_matrix, &object_matrix, &output_matrix);
+  SetTransMatrix(&output_matrix);
+  SetRotMatrix(&output_matrix);
+  
+  video_draw_model(object.model);
+
+  PopMatrix();
 }
 
 void video_draw_poly_f4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {

@@ -16,6 +16,7 @@
 
 struct sprite_Sprite;
 struct model_Model;
+struct model_Object;
 struct cd_File;
 
 typedef struct video_Texture {
@@ -30,14 +31,13 @@ void video_init_frame();
 void video_draw();
 
 void video_set_camera(VECTOR offset, SVECTOR angle);
-void video_set_local(VECTOR offset, SVECTOR angle);
-void video_reset_local();
 void video_set_light_color(short r, short g, short b);
 
 video_Texture video_load_texture(struct cd_File file);
 
 void video_draw_sprite(struct sprite_Sprite sprite, int x, int y);
 void video_draw_model(struct model_Model model);
+void video_draw_object(struct model_Object object);
 void video_draw_poly_f4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal);
 void video_draw_poly_ft4(POLY_FT4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal);
 void video_draw_poly_gt3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]);
