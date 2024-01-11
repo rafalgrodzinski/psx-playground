@@ -20,6 +20,16 @@
       <file name="giuli_pl.tim" type="data" source="data/giuli_pl.tim"/>
       <file name="giuli_fr.tim" type="data" source="data/giuli_fr.tim"/>
       <file name="crate.tim" type="data" source="data/crate.tim"/>
+
+      <file name="md0.tmd" type="data" source="data/md0.tmd"/>
+      <file name="md0.vdf" type="data" source="data/md0.vdf"/>
+      <file name="md0.ndf" type="data" source="data/md0.ndf"/>
+
+      <file name="md1.tmd" type="data" source="data/md1.tmd"/>
+      <file name="md2.tmd" type="data" source="data/md2.tmd"/>
+      <file name="md3.tmd" type="data" source="data/md3.tmd"/>
+      <file name="md4.tmd" type="data" source="data/md4.tmd"/>
+	  
       <dummy sectors="1024"/>
     </directory_tree> 
   </track>

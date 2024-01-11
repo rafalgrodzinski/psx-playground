@@ -1,28 +1,32 @@
-all: core.obj video.obj audio.obj pad.obj cd.obj sprite.obj model.obj
-	ccpsx -Xo$80010000 *.obj lib/mmgmnew.obj main.c -o main.cpe
+CFLAGS =
+LDFLAGS = -lLIBHMD lib/mmgmnew.obj
+OBJS = core.obj video.obj audio.obj pad.obj cd.obj sprite.obj model.obj
+
+all: $(OBJS)
+	ccpsx $(LDFLAGS) $(CFLAGS) -Xo$80010000 *.obj main.c -o main.cpe
 	cpe2x main.cpe
 	mkpsxiso -y test.xml
 
 core.obj:
-	ccpsx -c core.c
+	ccpsx $(CFLAGS) -c core.c
 
 video.obj:
-	ccpsx -c video.c
+	ccpsx $(CFLAGS) -c video.c
 
 audio.obj:
-	ccpsx -c audio.c
+	ccpsx $(CFLAGS) -c audio.c
 
 pad.obj:
-	ccpsx -c pad.c
+	ccpsx $(CFLAGS) -c pad.c
 
 cd.obj:
-	ccpsx -c cd.c
+	ccpsx $(CFLAGS) -c cd.c
 
 sprite.obj:
-	ccpsx -c sprite.c
+	ccpsx $(CFLAGS) -c sprite.c
 
 model.obj:
-	ccpsx -c model.c
+	ccpsx $(CFLAGS) -c model.c
 
 run:
 	psymake

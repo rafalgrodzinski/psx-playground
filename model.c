@@ -173,3 +173,6 @@ model_Model model_create_plane(int size, CVECTOR color, video_Texture *texture) 
 
   return model;
 }
+
+model_Anim model_load_mime(cd_File file) {
+}

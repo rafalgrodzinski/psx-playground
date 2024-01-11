@@ -185,6 +185,7 @@ void video_draw_object(model_Object object) {
   PushMatrix();
   RotMatrix(&object.angle, &object_matrix);
   TransMatrix(&object_matrix, &object.offset);
+  ScaleMatrix(&object_matrix, &object.scale);
   CompMatrixLV(&camera_matrix, &object_matrix, &output_matrix);
   SetTransMatrix(&output_matrix);
   SetRotMatrix(&output_matrix);
