@@ -159,12 +159,58 @@ void video_draw_sprite(sprite_Sprite sprite, int x, int y) {
 
 void video_draw_model(model_Model model) {
   int i;
-  void *poly;
+  
+  for (i=0; i<model.polys_count; i++) {
+	if (model.polys[i].type == model_Poly_Type_F3) {
+		POLY_F3 *poly = (POLY_F3*)model.polys[i].gpu_poly;
+		SVECTOR vertices[3];
+		vertices[0] = model.vertices[model.polys[i].vertice_offsets[0]];
+		vertices[1] = model.vertices[model.polys[i].vertice_offsets[1]];
+		vertices[2] = model.vertices[model.polys[i].vertice_offsets[2]];
 
-  if (model.poly_type == model_Poly_Type_GT3) {
+		video_draw_poly_f3(poly, vertices, model.polys[i].colors[0], model.polys[i].normals[0]);
+	  } else if (model.polys[i].type == model_Poly_Type_FT3) {
+		POLY_FT3 *poly = (POLY_FT3*)model.polys[i].gpu_poly;
+		SVECTOR vertices[3];
+		//vertices[0] = model.raw_vertices[model.raw_vertice_offsets[i][0]];
+		//vertices[1] = model.raw_vertices[model.raw_vertice_offsets[i][1]];
+        //vertices[2] = model.raw_vertices[model.raw_vertice_offsets[i][2]];
+		vertices[0] = model.vertices[model.polys[i].vertice_offsets[0]];
+		vertices[1] = model.vertices[model.polys[i].vertice_offsets[1]];
+		vertices[2] = model.vertices[model.polys[i].vertice_offsets[2]];
+
+		//poly = &((POLY_F3*)model.polys)[i];
+		//video_draw_poly_f3(poly, vertices, model.colors[i][0], model.normals[i][0]);
+		video_draw_poly_ft3(poly, vertices, model.polys[i].colors[0], model.polys[i].normals[0]);
+	  } else if (model.polys[i].type == model_Poly_Type_G3) {
+		POLY_G3 *poly = (POLY_G3*)model.polys[i].gpu_poly;
+		SVECTOR vertices[3];
+		vertices[0] = model.vertices[model.polys[i].vertice_offsets[0]];
+		vertices[1] = model.vertices[model.polys[i].vertice_offsets[1]];
+		vertices[2] = model.vertices[model.polys[i].vertice_offsets[2]];
+
+		video_draw_poly_g3(poly, vertices, model.polys[i].colors, model.polys[i].normals);
+	  } else if (model.polys[i].type == model_Poly_Type_G4) {
+		POLY_G4 *poly = (POLY_G4*)model.polys[i].gpu_poly;
+		SVECTOR vertices[4];
+		vertices[0] = model.vertices[model.polys[i].vertice_offsets[0]];
+		vertices[1] = model.vertices[model.polys[i].vertice_offsets[1]];
+		vertices[2] = model.vertices[model.polys[i].vertice_offsets[2]];
+		vertices[3] = model.vertices[model.polys[i].vertice_offsets[2]];
+
+		video_draw_poly_g4(poly, vertices, model.polys[i].colors, model.polys[i].normals);
+	  }
+  }
+
+  /*if (model.poly_type == model_Poly_Type_F3) {
     for (i=0; i<model.polys_count; i++) {
-      poly = &((POLY_GT3*)model.polys)[i];
-      video_draw_poly_gt3(poly, model.vertices[i], model.colors[i], model.normals[i]);
+	  SVECTOR vertices[3];
+      vertices[0] = model.raw_vertices[model.raw_vertice_offsets[i][0]];
+      vertices[1] = model.raw_vertices[model.raw_vertice_offsets[i][1]];
+      vertices[2] = model.raw_vertices[model.raw_vertice_offsets[i][2]];
+
+	  poly = &((POLY_F3*)model.polys)[i];
+	  video_draw_poly_f3(poly, vertices, model.colors[i][0], model.normals[i][0]);
     }
   } else if (model.poly_type == model_Poly_Type_F4) {
     for (i=0; i<model.polys_count; i++) {
@@ -176,7 +222,15 @@ void video_draw_model(model_Model model) {
       poly = &((POLY_FT4*)model.polys)[i];
       video_draw_poly_ft4(poly, model.vertices[i], model.colors[i][0], model.normals[i][0]);
     }
-  }
+  } else if (model.poly_type == model_Poly_Type_GT3) {
+	  SVECTOR vertices[3];
+      vertices[0] = model.raw_vertices[model.raw_vertice_offsets[i][0]];
+      vertices[1] = model.raw_vertices[model.raw_vertice_offsets[i][1]];
+      vertices[2] = model.raw_vertices[model.raw_vertice_offsets[i][2]];
+
+      poly = &((POLY_GT3*)model.polys)[i];
+      video_draw_poly_gt3(poly, vertices, model.colors[i], model.normals[i]);
+  }*/
 }
 
 void video_draw_object(model_Object object) {
@@ -195,12 +249,38 @@ void video_draw_object(model_Object object) {
   PopMatrix();
 }
 
+void video_draw_poly_f3(POLY_F3 *poly, SVECTOR vertices[3], CVECTOR color, SVECTOR normal) {
+	long outerProduct, otz;
+	long tmp;
+	
+	outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
+		&poly->x0, &poly->x1, &poly->x2,
+		&tmp, &otz, &tmp);
+	if (outerProduct > 0) {
+		NormalColorCol(&normal, &color, &poly->r0);
+		AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+	}
+}
+
 void video_draw_poly_f4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {
   long outerProduct, otz;
   long tmp;
 
   outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
     &poly->x0, &poly->x1, &poly->x2, &poly->x3,
+    &tmp, &otz, &tmp);
+  if (outerProduct > 0) {
+    NormalColorCol(&normal, &color, &poly->r0);
+    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+  }
+}
+
+void video_draw_poly_ft3(POLY_FT3 *poly, SVECTOR vertices[3], CVECTOR color, SVECTOR normal) {
+  long outerProduct, otz;
+  long tmp;
+
+  outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
+    &poly->x0, &poly->x1, &poly->x2,
     &tmp, &otz, &tmp);
   if (outerProduct > 0) {
     NormalColorCol(&normal, &color, &poly->r0);
@@ -221,6 +301,37 @@ void video_draw_poly_ft4(POLY_FT4 *poly, SVECTOR vertices[4], CVECTOR color, SVE
   }
 }
 
+void video_draw_poly_g3(POLY_G3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]) {
+  long outerProduct, otz;
+  long tmp;
+
+  outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
+    &poly->x0, &poly->x1, &poly->x2,
+    &tmp, &otz, &tmp);
+  if (outerProduct > 0) {
+    NormalColorCol(&normals[0], &colors[0], &poly->r0);
+    NormalColorCol(&normals[1], &colors[1], &poly->r1);
+    NormalColorCol(&normals[2], &colors[2], &poly->r2);
+    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+  }
+}
+
+void video_draw_poly_g4(POLY_G4 *poly, SVECTOR vertices[4], CVECTOR colors[4], SVECTOR normals[4]) {
+  long outerProduct, otz;
+  long tmp;
+
+  outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+    &poly->x0, &poly->x1, &poly->x2, &poly->x3,
+    &tmp, &otz, &tmp);
+  if (outerProduct > 0) {
+    NormalColorCol(&normals[0], &colors[0], &poly->r0);
+    NormalColorCol(&normals[1], &colors[1], &poly->r1);
+    NormalColorCol(&normals[2], &colors[2], &poly->r2);
+	NormalColorCol(&normals[3], &colors[3], &poly->r3);
+    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+  }
+}
+
 void video_draw_poly_gt3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]) {
   long outerProduct, otz;
   long tmp;
@@ -235,4 +346,22 @@ void video_draw_poly_gt3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3],
     AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
   }
 }
+
+/*void video_animate_model(model_Model model, model_Anim anim, int n) {
+  int i;
+  int cnv2[32] = {
+    20,  30,  40,  50,  59,  79,  98, 128,
+    157, 177, 197, 206, 216, 226, 236, 238,
+    236, 226, 216, 206, 197, 177, 157, 128,
+    98,  79,  59,  50,  40,  30,  20,  10
+  };
+
+  memcpy(model.raw_vertices, anim.original_vertices, sizeof(SVECTOR) * anim.count);
+  gteMIMefunc(model.raw_vertices, anim.diffs, anim.count, n);//cnv2[n % 32]);
+*/
+  /*for(i=0; i<anim.count; i++) {
+    copyVector(&model.vertices[i/3][i%3], &anim.vertices[i]);
+    copyVector(&anim.vertices[i], &anim.original_vertices[i/3][i%3]);
+  }*/
+//}
 

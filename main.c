@@ -16,9 +16,9 @@
 VECTOR camera_offset = {0, 0, 512};
 SVECTOR camera_angle = {0, 0, 0};
 
-
 model_Object test_object;
 model_Anim test_anim;
+long p = 0;
 
 int main() {
   int i;
@@ -69,31 +69,21 @@ int main() {
       test_object.scale.vz += 16;
     }
 
-    /*if (pad_is_pressed(PAD_1, PAD_L1))
-      car_trans.vx += 8;
+    if (pad_is_pressed(PAD_1, PAD_START)) {
+      p += 32;
+    }
 
-    if (pad_is_pressed(PAD_1, PAD_L2))
-      car_trans.vx -= 8;*/
+    if (pad_is_pressed(PAD_1, PAD_SELECT)) {
+      p -= 32;
+    }
+	
+	//printf("vx: %d, vy: %d, vz: %d, sx: %d, sy: %d, sz: %d, p: %d\n", camera_offset.vx, camera_offset.vy, camera_offset.vz, test_object.scale.vx, test_object.scale.vy, test_object.scale.vz, p);
 
-    /*if (pad_is_pressed(PAD_1, PAD_R1))
-      car_object.offset.vz += 8;
-
-    if (pad_is_pressed(PAD_1, PAD_R2))
-      car_object.offset.vz -= 8;*/
-
-    /*if (pad_is_pressed(PAD_1, PAD_START))
-      car_object.angle.vy += 8;
-
-    if (pad_is_pressed(PAD_1, PAD_SELECT))
-      car_object.angle.vy -= 8;*/
+    //video_animate_model(test_object.model, test_anim, p);
 
     video_set_camera(camera_offset, camera_angle);
     video_init_frame();
-
-    //video_draw_object(car_object);
-    //video_draw_model(floor_model);
     video_draw_object(test_object);
-
     video_draw();
   }
 }
@@ -104,14 +94,21 @@ static load_data() {
   void *vertex_buff = malloc3(sizeof(char) * 0x10000);
   void *normal_buff = malloc3(sizeof(char) * 0x10000);
 
-  file = cd_load_file("\\MD0.TMD;1");
+  //file = cd_load_file("\\DINO.TMD;1");
+  //file = cd_load_file("\\MD0.TMD;1");
+  //file = cd_load_file("\\GIULIETA.TMD;1");
+  //file = cd_load_file("\\SHUTTLE.TMD;1");
+  file = cd_load_file("\\TE.TMD;1");
   test_object.model = model_load_tmd(file, (CVECTOR) { 128, 128, 128 }, NULL);
   test_object.angle = (SVECTOR) { 0, 0, 0 };
-  test_object.offset = (VECTOR) { 0, 0, 0 };
-  test_object.scale = (VECTOR) { ONE, ONE, ONE };
+  //test_object.offset = (VECTOR) { 0, 0, 0 };
+  test_object.offset = (VECTOR) { 0, 0, 3500 };
+  //test_object.scale = (VECTOR) { ONE, ONE, ONE };
+  test_object.scale = (VECTOR) { 2000, 2000, 2000 };
 
-  file = cd_load_file("\\MD0.VDF;1");
-  test_anim = model_load_mime(file);
+  //file = cd_load_file("\\DINO.VDF;1");
+  //file = cd_load_file("\\MD0.VDF;1");
+  //test_anim = model_load_mime(file, test_object.model);
 
   //init_mime_data(0,  file1.buffer, file2.buffer, file3.buffer, vertex_buff, normal_buff);
 }
