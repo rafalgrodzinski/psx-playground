@@ -96,10 +96,11 @@ static load_data() {
 
   //file = cd_load_file("\\DINO.TMD;1");
   //file = cd_load_file("\\MD0.TMD;1");
+  //file = cd_load_file("\\MD0.TMD;1");
   //file = cd_load_file("\\GIULIETA.TMD;1");
-  //file = cd_load_file("\\SHUTTLE.TMD;1");
-  file = cd_load_file("\\TE.TMD;1");
-  test_object.model = model_load_tmd(file, (CVECTOR) { 128, 128, 128 }, NULL);
+  file = cd_load_file("\\SHUTTLE.TMD;1");
+  //file = cd_load_file("\\TE.TMD;1");
+  test_object.model = model_load_tmd(file, NULL);
   test_object.angle = (SVECTOR) { 0, 0, 0 };
   //test_object.offset = (VECTOR) { 0, 0, 0 };
   test_object.offset = (VECTOR) { 0, 0, 3500 };

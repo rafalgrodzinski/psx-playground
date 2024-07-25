@@ -158,48 +158,64 @@ void video_draw_sprite(sprite_Sprite sprite, int x, int y) {
 }
 
 void video_draw_model(model_Model model) {
-  int i;
+  int i, j;
   
-  for (i=0; i<model.polys_count; i++) {
-	if (model.polys[i].type == model_Poly_Type_F3) {
-		POLY_F3 *poly = (POLY_F3*)model.polys[i].gpu_poly;
-		SVECTOR vertices[3];
-		vertices[0] = model.vertices[model.polys[i].vertice_offsets[0]];
-		vertices[1] = model.vertices[model.polys[i].vertice_offsets[1]];
-		vertices[2] = model.vertices[model.polys[i].vertice_offsets[2]];
+  for (i=0; i<model.meshes_count; i++) {
+    model_Mesh *mesh = &model.meshes[i];
+    
+    for (j=0; j<mesh->polys_count; j++) {
+      model_Poly *poly = &mesh->polys[j];
+      
+      if (poly->type == model_Poly_Type_F3) {
+        POLY_F3 *gpu_poly = (POLY_F3*)poly->gpu_poly;
+        SVECTOR vertices[3];
+        vertices[0] = mesh->vertices[poly->vertice_offsets[0]];
+        vertices[1] = mesh->vertices[poly->vertice_offsets[1]];
+        vertices[2] = mesh->vertices[poly->vertice_offsets[2]];
 
-		video_draw_poly_f3(poly, vertices, model.polys[i].colors[0], model.polys[i].normals[0]);
-	  } else if (model.polys[i].type == model_Poly_Type_FT3) {
-		POLY_FT3 *poly = (POLY_FT3*)model.polys[i].gpu_poly;
-		SVECTOR vertices[3];
-		//vertices[0] = model.raw_vertices[model.raw_vertice_offsets[i][0]];
-		//vertices[1] = model.raw_vertices[model.raw_vertice_offsets[i][1]];
-        //vertices[2] = model.raw_vertices[model.raw_vertice_offsets[i][2]];
-		vertices[0] = model.vertices[model.polys[i].vertice_offsets[0]];
-		vertices[1] = model.vertices[model.polys[i].vertice_offsets[1]];
-		vertices[2] = model.vertices[model.polys[i].vertice_offsets[2]];
+        video_draw_poly_f3(gpu_poly, vertices, poly->colors[0], poly->normals[0]);
+      } else if (poly->type == model_Poly_Type_F4) {
+        POLY_F4 *gpu_poly = (POLY_F4*)poly->gpu_poly;
+        SVECTOR vertices[3];
+        vertices[0] = mesh->vertices[poly->vertice_offsets[0]];
+        vertices[1] = mesh->vertices[poly->vertice_offsets[1]];
+        vertices[2] = mesh->vertices[poly->vertice_offsets[2]];
+        vertices[3] = mesh->vertices[poly->vertice_offsets[3]];
 
-		//poly = &((POLY_F3*)model.polys)[i];
-		//video_draw_poly_f3(poly, vertices, model.colors[i][0], model.normals[i][0]);
-		video_draw_poly_ft3(poly, vertices, model.polys[i].colors[0], model.polys[i].normals[0]);
-	  } else if (model.polys[i].type == model_Poly_Type_G3) {
-		POLY_G3 *poly = (POLY_G3*)model.polys[i].gpu_poly;
-		SVECTOR vertices[3];
-		vertices[0] = model.vertices[model.polys[i].vertice_offsets[0]];
-		vertices[1] = model.vertices[model.polys[i].vertice_offsets[1]];
-		vertices[2] = model.vertices[model.polys[i].vertice_offsets[2]];
+        video_draw_poly_f4(gpu_poly, vertices, poly->colors[0], poly->normals[0]);
+      }
+      /*else if (model.polys[i].type == model_Poly_Type_FT3) {
+        POLY_FT3 *poly = (POLY_FT3*)model.polys[i].gpu_poly;
+        SVECTOR vertices[3];
+        //vertices[0] = model.raw_vertices[model.raw_vertice_offsets[i][0]];
+        //vertices[1] = model.raw_vertices[model.raw_vertice_offsets[i][1]];
+            //vertices[2] = model.raw_vertices[model.raw_vertice_offsets[i][2]];
+        vertices[0] = model.vertices[model.polys[i].vertice_offsets[0]];
+        vertices[1] = model.vertices[model.polys[i].vertice_offsets[1]];
+        vertices[2] = model.vertices[model.polys[i].vertice_offsets[2]];
 
-		video_draw_poly_g3(poly, vertices, model.polys[i].colors, model.polys[i].normals);
-	  } else if (model.polys[i].type == model_Poly_Type_G4) {
-		POLY_G4 *poly = (POLY_G4*)model.polys[i].gpu_poly;
-		SVECTOR vertices[4];
-		vertices[0] = model.vertices[model.polys[i].vertice_offsets[0]];
-		vertices[1] = model.vertices[model.polys[i].vertice_offsets[1]];
-		vertices[2] = model.vertices[model.polys[i].vertice_offsets[2]];
-		vertices[3] = model.vertices[model.polys[i].vertice_offsets[2]];
+        //poly = &((POLY_F3*)model.polys)[i];
+        //video_draw_poly_f3(poly, vertices, model.colors[i][0], model.normals[i][0]);
+        video_draw_poly_ft3(poly, vertices, model.polys[i].colors[0], model.polys[i].normals[0]);
+      }*/ else if (poly->type == model_Poly_Type_G3) {
+        POLY_G3 *gpu_poly = (POLY_G3*)poly->gpu_poly;
+        SVECTOR vertices[3];
+        vertices[0] = mesh->vertices[poly->vertice_offsets[0]];
+        vertices[1] = mesh->vertices[poly->vertice_offsets[1]];
+        vertices[2] = mesh->vertices[poly->vertice_offsets[2]];
 
-		video_draw_poly_g4(poly, vertices, model.polys[i].colors, model.polys[i].normals);
-	  }
+        video_draw_poly_g3(gpu_poly, vertices, poly->colors, poly->normals);
+      } else if (poly->type == model_Poly_Type_G4) {
+        POLY_G4 *gpu_poly = (POLY_G4*)poly->gpu_poly;
+        SVECTOR vertices[4];
+        vertices[0] = mesh->vertices[poly->vertice_offsets[0]];
+        vertices[1] = mesh->vertices[poly->vertice_offsets[1]];
+        vertices[2] = mesh->vertices[poly->vertice_offsets[2]];
+        vertices[3] = mesh->vertices[poly->vertice_offsets[2]];
+
+        video_draw_poly_g4(poly, vertices, poly->colors,poly->normals);
+      }
+    }
   }
 
   /*if (model.poly_type == model_Poly_Type_F3) {

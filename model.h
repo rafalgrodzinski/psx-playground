@@ -28,11 +28,16 @@ typedef struct model_Poly {
 	CVECTOR colors[4];
 } model_Poly;
 
-typedef struct model_Model {
-  int polys_count;
-  int objects_count;
-  model_Poly *polys;
+typedef struct model_Mesh {
+	int polys_count;
+	model_Poly *polys;
   SVECTOR *vertices;
+} model_Mesh;
+
+typedef struct model_Model {
+  int meshes_count;
+  model_Mesh *meshes;
+  //SVECTOR *vertices;
 } model_Model;
 
 typedef struct model_Anim {
@@ -50,7 +55,7 @@ typedef struct model_Object {
 } model_Object;
 
 
-model_Model model_load_tmd(struct cd_File file, CVECTOR color, struct video_Texture *texture);
+model_Model model_load_tmd(struct cd_File file, struct video_Texture *texture);
 //model_Model model_create_cube(int size, CVECTOR color, struct video_Texture *texture);
 //model_Model model_create_plane(int size, CVECTOR color, struct video_Texture *texture);
 //model_Anim model_load_mime(struct cd_File file, model_Model model);
