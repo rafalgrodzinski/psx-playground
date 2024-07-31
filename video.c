@@ -129,7 +129,7 @@ void video_set_light_color(short r, short g, short b) {
 }
 
 video_Texture video_load_texture(cd_File file) {
-  video_Texture texture;
+  video_Texture texture;// = { 0 };
   TIM_IMAGE tim;
 
   OpenTIM((u_long*)file.buffer);
@@ -139,6 +139,7 @@ video_Texture video_load_texture(cd_File file) {
   texture.tpage = getTPage(tim.mode, 0, tim.prect->x, tim.prect->y);
 
   if (tim.caddr) {
+    printf("Loading clut 0x%x\n", tim.caddr);
     texture.clut = LoadClut(tim.caddr, tim.crect->x, tim.crect->y);
   }
 
@@ -183,21 +184,24 @@ void video_draw_model(model_Model model) {
         vertices[3] = mesh->vertices[poly->vertice_offsets[3]];
 
         video_draw_poly_f4(gpu_poly, vertices, poly->colors[0], poly->normals[0]);
-      }
-      /*else if (model.polys[i].type == model_Poly_Type_FT3) {
-        POLY_FT3 *poly = (POLY_FT3*)model.polys[i].gpu_poly;
+      } else if (poly->type == model_Poly_Type_FT3) {
+        POLY_FT3 *gpu_poly = (POLY_FT3*)poly->gpu_poly;
         SVECTOR vertices[3];
-        //vertices[0] = model.raw_vertices[model.raw_vertice_offsets[i][0]];
-        //vertices[1] = model.raw_vertices[model.raw_vertice_offsets[i][1]];
-            //vertices[2] = model.raw_vertices[model.raw_vertice_offsets[i][2]];
-        vertices[0] = model.vertices[model.polys[i].vertice_offsets[0]];
-        vertices[1] = model.vertices[model.polys[i].vertice_offsets[1]];
-        vertices[2] = model.vertices[model.polys[i].vertice_offsets[2]];
+        vertices[0] = mesh->vertices[poly->vertice_offsets[0]];
+        vertices[1] = mesh->vertices[poly->vertice_offsets[1]];
+        vertices[2] = mesh->vertices[poly->vertice_offsets[2]];
 
-        //poly = &((POLY_F3*)model.polys)[i];
-        //video_draw_poly_f3(poly, vertices, model.colors[i][0], model.normals[i][0]);
-        video_draw_poly_ft3(poly, vertices, model.polys[i].colors[0], model.polys[i].normals[0]);
-      }*/ else if (poly->type == model_Poly_Type_G3) {
+        video_draw_poly_ft3(gpu_poly, vertices, poly->colors[0], poly->normals[0]);
+      } else if (poly->type == model_Poly_Type_FT4) {
+        POLY_FT4 *gpu_poly = (POLY_FT4*)poly->gpu_poly;
+        SVECTOR vertices[4];
+        vertices[0] = mesh->vertices[poly->vertice_offsets[0]];
+        vertices[1] = mesh->vertices[poly->vertice_offsets[1]];
+        vertices[2] = mesh->vertices[poly->vertice_offsets[2]];
+        vertices[3] = mesh->vertices[poly->vertice_offsets[3]];
+
+        video_draw_poly_ft4(gpu_poly, vertices, poly->colors[0], poly->normals[0]);
+      } else if (poly->type == model_Poly_Type_G3) {
         POLY_G3 *gpu_poly = (POLY_G3*)poly->gpu_poly;
         SVECTOR vertices[3];
         vertices[0] = mesh->vertices[poly->vertice_offsets[0]];
@@ -213,7 +217,15 @@ void video_draw_model(model_Model model) {
         vertices[2] = mesh->vertices[poly->vertice_offsets[2]];
         vertices[3] = mesh->vertices[poly->vertice_offsets[2]];
 
-        video_draw_poly_g4(poly, vertices, poly->colors,poly->normals);
+        video_draw_poly_g4(gpu_poly, vertices, poly->colors, poly->normals);
+      } else if (poly->type == model_Poly_Type_GT3) {
+        POLY_GT3 *gpu_poly = (POLY_GT3*)poly->gpu_poly;
+        SVECTOR vertices[3];
+        vertices[0] = mesh->vertices[poly->vertice_offsets[0]];
+        vertices[1] = mesh->vertices[poly->vertice_offsets[1]];
+        vertices[2] = mesh->vertices[poly->vertice_offsets[2]];
+
+        video_draw_poly_gt3(gpu_poly, vertices, poly->colors, poly->normals);
       }
     }
   }
@@ -238,15 +250,7 @@ void video_draw_model(model_Model model) {
       poly = &((POLY_FT4*)model.polys)[i];
       video_draw_poly_ft4(poly, model.vertices[i], model.colors[i][0], model.normals[i][0]);
     }
-  } else if (model.poly_type == model_Poly_Type_GT3) {
-	  SVECTOR vertices[3];
-      vertices[0] = model.raw_vertices[model.raw_vertice_offsets[i][0]];
-      vertices[1] = model.raw_vertices[model.raw_vertice_offsets[i][1]];
-      vertices[2] = model.raw_vertices[model.raw_vertice_offsets[i][2]];
-
-      poly = &((POLY_GT3*)model.polys)[i];
-      video_draw_poly_gt3(poly, vertices, model.colors[i], model.normals[i]);
-  }*/
+  } */
 }
 
 void video_draw_object(model_Object object) {
@@ -281,6 +285,8 @@ void video_draw_poly_f3(POLY_F3 *poly, SVECTOR vertices[3], CVECTOR color, SVECT
 void video_draw_poly_f4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {
   long outerProduct, otz;
   long tmp;
+  
+  printf("Drawing poly %d x %d x %d, %d x %d x %d, %d x %d x %d, %d x %d x %d\n", vertices[0].vx, vertices[0].vy, vertices[0].vz, vertices[1].vx, vertices[1].vy, vertices[1].vz, vertices[2].vx, vertices[2].vy, vertices[2].vz, vertices[3].vx, vertices[3].vy, vertices[3].vz);
 
   outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
     &poly->x0, &poly->x1, &poly->x2, &poly->x3,
@@ -295,6 +301,7 @@ void video_draw_poly_ft3(POLY_FT3 *poly, SVECTOR vertices[3], CVECTOR color, SVE
   long outerProduct, otz;
   long tmp;
 
+  //draw[current_buffer].tpage = poly->tpage;
   outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
     &poly->x0, &poly->x1, &poly->x2,
     &tmp, &otz, &tmp);
@@ -343,7 +350,7 @@ void video_draw_poly_g4(POLY_G4 *poly, SVECTOR vertices[4], CVECTOR colors[4], S
     NormalColorCol(&normals[0], &colors[0], &poly->r0);
     NormalColorCol(&normals[1], &colors[1], &poly->r1);
     NormalColorCol(&normals[2], &colors[2], &poly->r2);
-	NormalColorCol(&normals[3], &colors[3], &poly->r3);
+    NormalColorCol(&normals[3], &colors[3], &poly->r3);
     AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
   }
 }

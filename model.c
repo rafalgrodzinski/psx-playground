@@ -14,9 +14,6 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
   model.meshes_count = *ptr++;
   model.meshes = malloc3(sizeof(model_Mesh) * model.meshes_count);
   
-  //printf("vert_top: 0x%x\n", ptr++);
-  //printf("n_vert: %d\n", *ptr++);
-
   printf("Loading %d meshes\n", model.meshes_count);
   for (i=0; i<model.meshes_count; i++) {
     model_Mesh *mesh = &model.meshes[i];
@@ -45,28 +42,24 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
         mesh->vertices = tmd_prim.v_ofs;
       }
 	
-      //printf("code: %d, gouard: %d, quad: %d, texture: %d, trans: %d, tex lit: %d, size: %d, multi col: %d, double face: %d, lit: %d\n",
-      //code, is_gouard_shaded, is_quad, is_textured, is_translucent, is_texture_lit, sizeof(u_char), is_multi_color, is_double_faced, is_lit);
-	
       // F3
       if (!is_quad && !is_textured && !is_gouard_shaded) {
-        //printf("F3\n");
+        printf("F3\n");
         mesh->polys[j].type = model_Poly_Type_F3;
         mesh->polys[j].gpu_poly = malloc3(sizeof(POLY_F3));
         SetPolyF3((POLY_F3*)mesh->polys[j].gpu_poly);
       // F4
       } else if (is_quad && !is_textured && !is_gouard_shaded) {
-        //printf("F4\n");
+        printf("F4\n");
         mesh->polys[j].type = model_Poly_Type_F4;
         mesh->polys[j].gpu_poly = malloc3(sizeof(POLY_F4));
         SetPolyF4((POLY_F4*)mesh->polys[j].gpu_poly);
       // FT3
       } else if (!is_quad && is_textured && !is_gouard_shaded) {
         printf("FT3\n");
-        continue;
         mesh->polys[j].type = model_Poly_Type_FT3;
-        //model.polys[i].gpu_poly = malloc3(sizeof(POLY_FT3));
-        //SetPolyFT3((POLY_FT3*)model.polys[i].gpu_poly);
+        mesh->polys[j].gpu_poly = malloc3(sizeof(POLY_FT3));
+        SetPolyFT3((POLY_FT3*)mesh->polys[j].gpu_poly);
       // FT4
       } else if (is_quad && is_textured && !is_gouard_shaded) {
         printf("FT4\n");
@@ -74,21 +67,22 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
         mesh->polys[j].type = model_Poly_Type_FT4;
       // G3
       } else if (!is_quad && !is_textured && is_gouard_shaded) {
-        //printf("G3\n");
+        printf("G3\n");
         mesh->polys[j].type = model_Poly_Type_G3;
         mesh->polys[j].gpu_poly = malloc3(sizeof(POLY_G3));
         SetPolyG3((POLY_G3*)mesh->polys[j].gpu_poly);
       // G4
       } else if (is_quad && !is_textured && is_gouard_shaded) {
-        //printf("G4\n");
+        printf("G4\n");
         mesh->polys[j].type = model_Poly_Type_G4;
         mesh->polys[j].gpu_poly = malloc3(sizeof(POLY_G4));
         SetPolyG4((POLY_G4*)mesh->polys[j].gpu_poly);
       // GT3
       } else if (!is_quad && is_textured && is_gouard_shaded) {
         printf("GT3\n");
-        continue;
         mesh->polys[j].type = model_Poly_Type_GT3;
+        mesh->polys[j].gpu_poly = malloc3(sizeof(POLY_GT3));
+        SetPolyGT3((POLY_GT3*)mesh->polys[j].gpu_poly);
       // GT4
       } else if (is_quad && is_textured && is_gouard_shaded) {
         printf("GT4\n");
@@ -100,62 +94,63 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
         continue;
       }
 
-    /*model.vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 3);
-    copyVector(&model.vertices[i][0], &tmd_prim.x0);
-    copyVector(&model.vertices[i][1], &tmd_prim.x1);
-    copyVector(&model.vertices[i][2], &tmd_prim.x2);*/
-	//printf("x0: %d, y0: %d, z0: %d\n", tmd_prim.x0.vx, tmd_prim.x0.vy, tmd_prim.x0.vz);
-	//printf("x1: %d, y1: %d, z1: %d\n", tmd_prim.x1.vx, tmd_prim.x1.vy, tmd_prim.x1.vz);
-	//printf("x2: %d, y2: %d, z2: %d\n", tmd_prim.x2.vx, tmd_prim.x2.vy, tmd_prim.x2.vz);
-
-    //model.raw_vertice_offsets[i] = (u_short*)malloc3(sizeof(u_short) * 3);
-    //model.raw_vertice_offsets[i][0] = tmd_prim.vert0;
-    //model.raw_vertice_offsets[i][1] = tmd_prim.vert1;
-    //model.raw_vertice_offsets[i][2] = tmd_prim.vert2;
       mesh->polys[j].vertice_offsets[0] = tmd_prim.vert0;
       mesh->polys[j].vertice_offsets[1] = tmd_prim.vert1;
       mesh->polys[j].vertice_offsets[2] = tmd_prim.vert2;
       mesh->polys[j].vertice_offsets[3] = tmd_prim.vert3;
-    //printf("v0: %d, v1: %d, v2: %d\n", tmd_prim.vert0, tmd_prim.vert1, tmd_prim.vert2);
-    
-    //model.normals[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 3);
-    //copyVector(&model.normals[i][0], &tmd_prim.n0);
-    /*copyVector(&model.normals[i][1], &tmd_prim.n0);
-    copyVector(&model.normals[i][2], &tmd_prim.n0);*/
+
       copyVector(&mesh->polys[j].normals[0], &tmd_prim.n0);
       copyVector(&mesh->polys[j].normals[1], &tmd_prim.n1);
       copyVector(&mesh->polys[j].normals[2], &tmd_prim.n2);
       copyVector(&mesh->polys[j].normals[3], &tmd_prim.n3);
+    
+      if (is_textured) {
+        mesh->polys[j].colors[0] = (CVECTOR) { 128, 128, 128, ((POLY_GT3*)mesh->polys[j].gpu_poly)->code };
+        mesh->polys[j].colors[1] = (CVECTOR) { 128, 128, 128, ((POLY_GT3*)mesh->polys[j].gpu_poly)->code };
+        mesh->polys[j].colors[2] = (CVECTOR) { 128, 128, 128, ((POLY_GT3*)mesh->polys[j].gpu_poly)->code };
+        mesh->polys[j].colors[3] = (CVECTOR) { 128, 128, 128, ((POLY_GT3*)mesh->polys[j].gpu_poly)->code };
+      } else {
+        mesh->polys[j].colors[0] = (CVECTOR) { tmd_prim.r0, tmd_prim.g0, tmd_prim.b0, ((POLY_F3*)mesh->polys[j].gpu_poly)->code };
+        mesh->polys[j].colors[1] = (CVECTOR) { tmd_prim.r1, tmd_prim.g1, tmd_prim.b1, ((POLY_F3*)mesh->polys[j].gpu_poly)->code };
+        mesh->polys[j].colors[2] = (CVECTOR) { tmd_prim.r2, tmd_prim.g2, tmd_prim.b2, ((POLY_F3*)mesh->polys[j].gpu_poly)->code };
+        mesh->polys[j].colors[3] = (CVECTOR) { tmd_prim.r3, tmd_prim.g3, tmd_prim.b3, ((POLY_F3*)mesh->polys[j].gpu_poly)->code };
+      }
 
-    //model.colors[i] = (CVECTOR*)malloc3(sizeof(CVECTOR) * 3);
-    //model.colors[i][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_GT3*)poly)->code };
-	//model.colors[i][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F3*)poly)->code };
-    /*model.colors[i][1] = (CVECTOR) { color.r, color.g, color.b, ((POLY_GT3*)poly)->code };
-    model.colors[i][2] = (CVECTOR) { color.r, color.g, color.b, ((POLY_GT3*)poly)->code };*/
-      mesh->polys[j].colors[0] = (CVECTOR) { tmd_prim.r0, tmd_prim.g0, tmd_prim.b0, ((POLY_F3*)mesh->polys[j].gpu_poly)->code };
-      mesh->polys[j].colors[1] = (CVECTOR) { tmd_prim.r0, tmd_prim.g0, tmd_prim.b0, ((POLY_F3*)mesh->polys[j].gpu_poly)->code };
-      mesh->polys[j].colors[2] = (CVECTOR) { tmd_prim.r0, tmd_prim.g0, tmd_prim.b0, ((POLY_F3*)mesh->polys[j].gpu_poly)->code };
-      mesh->polys[j].colors[3] = (CVECTOR) { tmd_prim.r0, tmd_prim.g0, tmd_prim.b0, ((POLY_F3*)mesh->polys[j].gpu_poly)->code };
+      if (is_textured && !is_gouard_shaded) {
+        setUV4((POLY_FT4*)mesh->polys[j].gpu_poly, 
+          tmd_prim.u0, tmd_prim.v0,
+          tmd_prim.u1, tmd_prim.v1,
+          tmd_prim.u2, tmd_prim.v2,
+          tmd_prim.u3, tmd_prim.v3);
+          
+          if (texture != NULL) {
+            ((POLY_FT4*)mesh->polys[j].gpu_poly)->tpage =  texture->tpage;
+            ((POLY_FT4*)mesh->polys[j].gpu_poly)->clut = texture->clut;
+          } else {
+            ((POLY_FT4*)mesh->polys[j].gpu_poly)->tpage = tmd_prim.tpage;
+            ((POLY_FT4*)mesh->polys[j].gpu_poly)->clut = tmd_prim.clut;
+          }
 
-    /*setUV3((POLY_GT3*)poly, 
-      tmd_prim.u0, tmd_prim.v0,
-      tmd_prim.u1, tmd_prim.v1,
-      tmd_prim.u2, tmd_prim.v2);
+        SetShadeTex((POLY_FT4*)mesh->polys[j].gpu_poly, 1);
+      } else if (is_textured && is_gouard_shaded) {
+        setUV4((POLY_GT4*)mesh->polys[j].gpu_poly, 
+          tmd_prim.u0, tmd_prim.v0,
+          tmd_prim.u1, tmd_prim.v1,
+          tmd_prim.u2, tmd_prim.v2,
+          tmd_prim.u3, tmd_prim.v3);
+          
+          if (texture != NULL) {
+            ((POLY_GT4*)mesh->polys[j].gpu_poly)->tpage =  texture->tpage;
+            ((POLY_GT4*)mesh->polys[j].gpu_poly)->clut = texture->clut;
+          } else {
+            ((POLY_GT4*)mesh->polys[j].gpu_poly)->tpage = tmd_prim.tpage;
+            ((POLY_GT4*)mesh->polys[j].gpu_poly)->clut = tmd_prim.clut;
+          }
 
-    if (texture != NULL) {
-      ((POLY_GT3*)poly)->tpage = texture->tpage;
-      ((POLY_GT3*)poly)->clut = texture->clut;
-    } else {
-      ((POLY_GT3*)poly)->tpage = tmd_prim.tpage;
-      ((POLY_GT3*)poly)->clut = tmd_prim.clut;
-    }*/
+         SetShadeTex((POLY_GT4*)mesh->polys[j].gpu_poly, 1);
+      }
     }
-    //printf("Loaded mesh %d with %d polys\n", i, mesh->polys_count);
   }
-
-  //printf("Loaded model with %d mesh(s)\n", model.meshes_count);
-  //printf("Loaded model with %d meshes\n", model.meshes_count);
-
   return model;
 }
 
@@ -236,48 +231,74 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
   return model;
 }*/
 
-/*model_Model model_create_plane(int size, CVECTOR color, video_Texture *texture) {
+model_Model model_create_plane(int size, CVECTOR color, video_Texture *texture) {
   model_Model model;
 
-  model.polys_count = 1;
+  //model.polys_count = 1;
+  model.meshes_count = 1;
+  model.meshes = malloc3(sizeof(model_Mesh));
+  
+  model.meshes[0].polys_count = 1;
+  model.meshes[0].polys = malloc3(sizeof(model_Poly));
 
   if (texture != NULL) {
-    model.poly_type = model_Poly_Type_FT4;
-    model.polys = malloc3(sizeof(POLY_FT4));
-    SetPolyFT4(&model.polys[0]);
+    //model.poly_type = model_Poly_Type_FT4;
+    model.meshes[0].polys[0].type = model_Poly_Type_FT4;
+    //model.polys = malloc3(sizeof(POLY_FT4));
+    model.meshes[0].polys[0].gpu_poly = malloc3(sizeof(POLY_FT4));
+    //SetPolyFT4(&model.polys[0]);
+    SetPolyFT4((POLY_FT4*)model.meshes[0].polys[0].gpu_poly);
   } else {
-    model.poly_type = model_Poly_Type_F4;
-    model.polys = malloc3(sizeof(POLY_F4));
-    SetPolyF4(&model.polys[0]);
+    //model.poly_type = model_Poly_Type_F4;
+    model.meshes[0].polys[0].type = model_Poly_Type_F4;
+    //model.polys = malloc3(sizeof(POLY_F4));
+    model.meshes[0].polys[0].gpu_poly = malloc3(sizeof(POLY_F4));
+    //SetPolyF4(&model.polys[0]);
+    SetPolyF4((POLY_F4*)model.meshes[0].polys[0].gpu_poly);
   }
-  model.vertices = (SVECTOR**)malloc(sizeof(SVECTOR*));
-  model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*));
-  model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*));
+  //model.vertices = (SVECTOR**)malloc(sizeof(SVECTOR*));
+  //model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*));
+  //model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*));
 
-  model.vertices[0] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 4);
-  model.vertices[0][0] = (SVECTOR) { -size/2, 0, size/2, 0};
-  model.vertices[0][1] = (SVECTOR) { size/2, 0, size/2, 0};
-  model.vertices[0][2] = (SVECTOR) { -size/2, 0, -size/2, 0};
-  model.vertices[0][3] = (SVECTOR) { size/2, 0, -size/2, 0};
+  //model.vertices[0] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 4);
+  model.meshes[0].vertices = (SVECTOR*)malloc3(sizeof(SVECTOR) * 4);
+  //model.vertices[0][0] = (SVECTOR) { -size/2, 0, size/2, 0};
+  model.meshes[0].vertices[0] =  (SVECTOR) { -size/2, 0, size/2, 0};
+  model.meshes[0].polys[0].vertice_offsets[0] = 0;
+  //model.vertices[0][1] = (SVECTOR) { size/2, 0, size/2, 0};
+  model.meshes[0].vertices[1] =  (SVECTOR) { size/2, 0, size/2, 0};
+  model.meshes[0].polys[0].vertice_offsets[1] = 1;
+  //model.vertices[0][2] = (SVECTOR) { -size/2, 0, -size/2, 0};
+  model.meshes[0].vertices[2] =  (SVECTOR) { -size/2, 0, -size/2, 0};
+  model.meshes[0].polys[0].vertice_offsets[2] = 2;
+  //model.vertices[0][3] = (SVECTOR) { size/2, 0, -size/2, 0};
+  model.meshes[0].vertices[3] =  (SVECTOR) { size/2, 0, -size/2, 0};
+  model.meshes[0].polys[0].vertice_offsets[3] = 3;
 
-  model.normals[0] = (SVECTOR*)malloc3(sizeof(SVECTOR));
-  model.normals[0][0] = (SVECTOR) { 0, -ONE, 0, 0};
+  //model.normals[0] = (SVECTOR*)malloc3(sizeof(SVECTOR));
+  //model.normals[0][0] = (SVECTOR) { 0, -ONE, 0, 0};
+  model.meshes[0].polys[0].normals[0] = (SVECTOR) { 0, -ONE, 0, 0};
 
-  model.colors[0] = (CVECTOR*)malloc3(sizeof(CVECTOR));
+  //model.colors[0] = (CVECTOR*)malloc3(sizeof(CVECTOR));
   if (texture != NULL) {
-    model.colors[0][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_FT4*)&model.polys[0])->code };
-    setUVWH((POLY_FT4*)&model.polys[0], 0, 0, texture->prect.w, texture->prect.h);
-    ((POLY_FT4*)&model.polys[0])->tpage = texture->tpage;
-    ((POLY_FT4*)&model.polys[0])->clut = texture->clut;
+    //model.colors[0][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_FT4*)&model.polys[0])->code };
+    model.meshes[0].polys[0].colors[0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->code };
+    //setUVWH((POLY_FT4*)&model.polys[0], 0, 0, texture->prect.w, texture->prect.h);
+    setUVWH((POLY_FT4*)model.meshes[0].polys[0].gpu_poly, 0, 0, texture->prect.w, texture->prect.h);
+    //((POLY_FT4*)&model.polys[0])->tpage = texture->tpage;
+    ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->tpage = texture->tpage;
+    //((POLY_FT4*)&model.polys[0])->clut = texture->clut;
+    ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->clut = texture->clut;
     //SetShadeTex(&model.polys[0], 1);
   } else {
-    model.colors[0][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)&model.polys[0])->code };
+    //model.colors[0][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)&model.polys[0])->code };
+    model.meshes[0].polys[0].colors[0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)model.meshes[0].polys[0].gpu_poly)->code };
   }
 
   printf("Created plane model of size %d\n", size);
 
   return model;
-}*/
+}
 
 /*model_Anim model_load_mime(cd_File file, model_Model model) {
   model_Anim anim;
