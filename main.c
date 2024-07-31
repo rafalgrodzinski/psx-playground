@@ -103,10 +103,10 @@ static load_data() {
   //test_object.model = model_load_tmd(file, &texture);
   
   // Dino
-  file = cd_load_file("\\DINO.TIM;1");
-  video_load_texture(file);
-  file = cd_load_file("\\DINO.TMD;1");
-  test_object.model = model_load_tmd(file, NULL);
+  //file = cd_load_file("\\DINO.TIM;1");
+  //video_load_texture(file);
+  //file = cd_load_file("\\DINO.TMD;1");
+  //test_object.model = model_load_tmd(file, NULL);
   
   // Shutttle
   //file = cd_load_file("\\SHUTTLE.TMD;1");
@@ -138,15 +138,19 @@ static load_data() {
   
   // Plane
   //file = cd_load_file("\\CRATE.TIM;1");
+  //texture = video_load_texture(file);
   //test_object.model = model_create_plane(500, (CVECTOR) { 128, 128, 128 }, &texture);
 
   // Box
+  file = cd_load_file("\\CRATE.TIM;1");
+  texture = video_load_texture(file);
+  test_object.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, &texture);
   
   test_object.angle = (SVECTOR) { 0, 0, 0 };
   test_object.offset = (VECTOR) { 0, 0, 0 };
-  test_object.offset = (VECTOR) { 0, 0, 3500 };
+  //test_object.offset = (VECTOR) { 0, 0, 3500 };
   test_object.scale = (VECTOR) { ONE, ONE, ONE };
-  test_object.scale = (VECTOR) { 2000, 2000, 2000 };
+  //test_object.scale = (VECTOR) { 2000, 2000, 2000 };
 
   //file = cd_load_file("\\DINO.VDF;1");
   //file = cd_load_file("\\MD0.VDF;1");

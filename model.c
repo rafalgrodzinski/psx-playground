@@ -156,20 +156,26 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
   return model;
 }
 
-/*model_Model model_create_cube(int size, CVECTOR color, video_Texture *texture) {
+model_Model model_create_cube(int size, CVECTOR color, video_Texture *texture) {
   model_Model model;
-  void *poly;
   int i;
+  
+  model.meshes_count = 1;
+  model.meshes = malloc3(sizeof(model_Mesh));
 
-  SVECTOR p0 = { -size/2, -size/2, -size/2, 0 };
-  SVECTOR p1 = { size/2, -size/2, -size/2, 0 };
-  SVECTOR p2 = { size/2, size/2, -size/2, 0 };
-  SVECTOR p3 = { -size/2, size/2, -size/2, 0 };
+  model.meshes[0].polys_count = 1;
+  model.meshes[0].polys = malloc(sizeof(model_Poly) * 6);
 
-  SVECTOR p4 = { -size/2, -size/2, size/2, 0 };
-  SVECTOR p5 = { size/2, -size/2, size/2, 0 };
-  SVECTOR p6 = { size/2, size/2, size/2, 0 };
-  SVECTOR p7 = { -size/2, size/2, size/2, 0 };
+  model.meshes[0].vertices = (SVECTOR*)malloc3(sizeof(SVECTOR) * 8);
+  model.meshes[0].vertices[0] = (SVECTOR) { -size/2, -size/2, -size/2, 0 };
+  model.meshes[0].vertices[1] = (SVECTOR) { size/2, -size/2, -size/2, 0 };
+  model.meshes[0].vertices[2] = (SVECTOR) { size/2, size/2, -size/2, 0 };
+  model.meshes[0].vertices[3] = (SVECTOR) { -size/2, size/2, -size/2, 0 };
+
+  model.meshes[0].vertices[4] = (SVECTOR) { -size/2, -size/2, size/2, 0 };
+  model.meshes[0].vertices[5] = (SVECTOR) { size/2, -size/2, size/2, 0 };
+  model.meshes[0].vertices[6] = (SVECTOR) { size/2, size/2, size/2, 0 };
+  model.meshes[0].vertices[7] = (SVECTOR) { -size/2, size/2, size/2, 0 };
 
   SVECTOR n0 = { ONE, 0, 0, 0};
   SVECTOR n1 = { -ONE, 0, 0, 0};
@@ -189,15 +195,15 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
 
   SVECTOR *normals[6] = { &n5, &n0, &n4, &n1, &n3, &n2 };
 
-  model.polys_count = 6;
+  //model.polys_count = 6;
 
-  if (texture != NULL) {
-    model.poly_type = model_Poly_Type_FT4;
-    model.polys = malloc3(sizeof(POLY_FT4) * model.polys_count);
-  } else {
-    model.poly_type = model_Poly_Type_F4;
-    model.polys = malloc3(sizeof(POLY_F4) * model.polys_count);
-  }
+  //if (texture != NULL) {
+  //  model.meshes[0].polypoly_type = model_Poly_Type_FT4;
+  //  model.polys = malloc3(sizeof(POLY_FT4) * model.polys_count);
+  //} else {
+  //  model.poly_type = model_Poly_Type_F4;
+  //  model.polys = malloc3(sizeof(POLY_F4) * model.polys_count);
+  //}
   model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
   model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * model.polys_count);
@@ -231,12 +237,11 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
   printf("Created cube model of size %d\n", size);
 
   return model;
-}*/
+}
 
 model_Model model_create_plane(int size, CVECTOR color, video_Texture *texture) {
   model_Model model;
 
-  //model.polys_count = 1;
   model.meshes_count = 1;
   model.meshes = malloc3(sizeof(model_Mesh));
   
@@ -244,56 +249,32 @@ model_Model model_create_plane(int size, CVECTOR color, video_Texture *texture) 
   model.meshes[0].polys = malloc3(sizeof(model_Poly));
 
   if (texture != NULL) {
-    //model.poly_type = model_Poly_Type_FT4;
     model.meshes[0].polys[0].type = model_Poly_Type_FT4;
-    //model.polys = malloc3(sizeof(POLY_FT4));
     model.meshes[0].polys[0].gpu_poly = malloc3(sizeof(POLY_FT4));
-    //SetPolyFT4(&model.polys[0]);
     SetPolyFT4((POLY_FT4*)model.meshes[0].polys[0].gpu_poly);
   } else {
-    //model.poly_type = model_Poly_Type_F4;
     model.meshes[0].polys[0].type = model_Poly_Type_F4;
-    //model.polys = malloc3(sizeof(POLY_F4));
     model.meshes[0].polys[0].gpu_poly = malloc3(sizeof(POLY_F4));
-    //SetPolyF4(&model.polys[0]);
     SetPolyF4((POLY_F4*)model.meshes[0].polys[0].gpu_poly);
   }
-  //model.vertices = (SVECTOR**)malloc(sizeof(SVECTOR*));
-  //model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*));
-  //model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*));
 
-  //model.vertices[0] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 4);
   model.meshes[0].vertices = (SVECTOR*)malloc3(sizeof(SVECTOR) * 4);
-  //model.vertices[0][0] = (SVECTOR) { -size/2, 0, size/2, 0};
   model.meshes[0].vertices[0] =  (SVECTOR) { -size/2, 0, size/2, 0};
   model.meshes[0].polys[0].vertice_offsets[0] = 0;
-  //model.vertices[0][1] = (SVECTOR) { size/2, 0, size/2, 0};
   model.meshes[0].vertices[1] =  (SVECTOR) { size/2, 0, size/2, 0};
   model.meshes[0].polys[0].vertice_offsets[1] = 1;
-  //model.vertices[0][2] = (SVECTOR) { -size/2, 0, -size/2, 0};
   model.meshes[0].vertices[2] =  (SVECTOR) { -size/2, 0, -size/2, 0};
   model.meshes[0].polys[0].vertice_offsets[2] = 2;
-  //model.vertices[0][3] = (SVECTOR) { size/2, 0, -size/2, 0};
   model.meshes[0].vertices[3] =  (SVECTOR) { size/2, 0, -size/2, 0};
   model.meshes[0].polys[0].vertice_offsets[3] = 3;
-
-  //model.normals[0] = (SVECTOR*)malloc3(sizeof(SVECTOR));
-  //model.normals[0][0] = (SVECTOR) { 0, -ONE, 0, 0};
   model.meshes[0].polys[0].normals[0] = (SVECTOR) { 0, -ONE, 0, 0};
 
-  //model.colors[0] = (CVECTOR*)malloc3(sizeof(CVECTOR));
   if (texture != NULL) {
-    //model.colors[0][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_FT4*)&model.polys[0])->code };
     model.meshes[0].polys[0].colors[0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->code };
-    //setUVWH((POLY_FT4*)&model.polys[0], 0, 0, texture->prect.w, texture->prect.h);
     setUVWH((POLY_FT4*)model.meshes[0].polys[0].gpu_poly, 0, 0, texture->prect.w, texture->prect.h);
-    //((POLY_FT4*)&model.polys[0])->tpage = texture->tpage;
     ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->tpage = texture->tpage;
-    //((POLY_FT4*)&model.polys[0])->clut = texture->clut;
     ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->clut = texture->clut;
-    //SetShadeTex(&model.polys[0], 1);
   } else {
-    //model.colors[0][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)&model.polys[0])->code };
     model.meshes[0].polys[0].colors[0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)model.meshes[0].polys[0].gpu_poly)->code };
   }
 
