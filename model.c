@@ -160,10 +160,28 @@ model_Model model_create_cube(int size, CVECTOR color, video_Texture *texture) {
   model_Model model;
   int i;
   
+  SVECTOR n0 = { ONE, 0, 0, 0};
+  SVECTOR n1 = { -ONE, 0, 0, 0};
+  SVECTOR n2 = { 0, ONE, 0, 0};
+  SVECTOR n3 = { 0, -ONE, 0, 0};
+  SVECTOR n4 = { 0, 0, ONE, 0};
+  SVECTOR n5 = { 0, 0, -ONE, 0};
+  
+  SVECTOR *normals[6] = { &n5, &n0, &n4, &n1, &n3, &n2 };
+
+  int vertice_offsets[6][4] = {
+    { 0, 1, 3, 2 },
+    { 1, 5, 2, 6 },
+    { 5, 4, 6, 7 },
+    { 4, 0, 7, 3 },
+    { 4, 5, 0, 1 },
+    { 6, 7, 2, 3 }
+  };
+  
   model.meshes_count = 1;
   model.meshes = malloc3(sizeof(model_Mesh));
 
-  model.meshes[0].polys_count = 1;
+  model.meshes[0].polys_count = 6;
   model.meshes[0].polys = malloc(sizeof(model_Poly) * 6);
 
   model.meshes[0].vertices = (SVECTOR*)malloc3(sizeof(SVECTOR) * 8);
@@ -177,60 +195,29 @@ model_Model model_create_cube(int size, CVECTOR color, video_Texture *texture) {
   model.meshes[0].vertices[6] = (SVECTOR) { size/2, size/2, size/2, 0 };
   model.meshes[0].vertices[7] = (SVECTOR) { -size/2, size/2, size/2, 0 };
 
-  SVECTOR n0 = { ONE, 0, 0, 0};
-  SVECTOR n1 = { -ONE, 0, 0, 0};
-  SVECTOR n2 = { 0, ONE, 0, 0};
-  SVECTOR n3 = { 0, -ONE, 0, 0};
-  SVECTOR n4 = { 0, 0, ONE, 0};
-  SVECTOR n5 = { 0, 0, -ONE, 0};
+  for (i=0; i<model.meshes[0].polys_count; i++) {
+    model.meshes[0].polys[i].vertice_offsets[0] = vertice_offsets[i][0];
+    model.meshes[0].polys[i].vertice_offsets[1] = vertice_offsets[i][1];
+    model.meshes[0].polys[i].vertice_offsets[2] = vertice_offsets[i][2];
+    model.meshes[0].polys[i].vertice_offsets[3] = vertice_offsets[i][3];
 
-  SVECTOR vertices[6][4] = {
-    { p0, p1, p3, p2 },
-    { p1, p5, p2, p6 },
-    { p5, p4, p6, p7 },
-    { p4, p0, p7, p3 },
-    { p4, p5, p0, p1 },
-    { p6, p7, p2, p3 }
-  };
+    copyVector(model.meshes[0].polys[i].normals, normals[i]);
 
-  SVECTOR *normals[6] = { &n5, &n0, &n4, &n1, &n3, &n2 };
-
-  //model.polys_count = 6;
-
-  //if (texture != NULL) {
-  //  model.meshes[0].polypoly_type = model_Poly_Type_FT4;
-  //  model.polys = malloc3(sizeof(POLY_FT4) * model.polys_count);
-  //} else {
-  //  model.poly_type = model_Poly_Type_F4;
-  //  model.polys = malloc3(sizeof(POLY_F4) * model.polys_count);
-  //}
-  model.vertices = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
-  model.normals = (SVECTOR**)malloc3(sizeof(SVECTOR*) * model.polys_count);
-  model.colors = (CVECTOR**)malloc3(sizeof(CVECTOR*) * model.polys_count);
-
-  for (i=0; i<model.polys_count; i++) {
-    model.vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 4);
-    copyVector(&model.vertices[i][0], &vertices[i][0]);
-    copyVector(&model.vertices[i][1], &vertices[i][1]);
-    copyVector(&model.vertices[i][2], &vertices[i][2]);
-    copyVector(&model.vertices[i][3], &vertices[i][3]);
-
-    model.normals[i] = (SVECTOR*)malloc3(sizeof(SVECTOR));
-    copyVector(&model.normals[i][0], normals[i]);
-
-    model.colors[i] = (CVECTOR*)malloc3(sizeof(CVECTOR));
     if (texture != NULL) {
-      poly = &((POLY_FT4*)model.polys)[i];
-      SetPolyFT4((POLY_FT4*)poly);
-      model.colors[i][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_FT4*)poly)->code };
-      setUVWH((POLY_FT4*)poly, 0, 0, texture->prect.w, texture->prect.h);
-      ((POLY_FT4*)poly)->tpage = texture->tpage;
-      ((POLY_FT4*)poly)->clut = texture->clut;
-      //SetShadeTex((POLY_FT4*)poly, 1);
+      model.meshes[0].polys[i].type = model_Poly_Type_FT4;
+      model.meshes[0].polys[i].gpu_poly = malloc3(sizeof(POLY_FT4));
+      SetPolyFT4((POLY_FT4*)model.meshes[0].polys[i].gpu_poly);
+      setUVWH((POLY_FT4*)model.meshes[0].polys[i].gpu_poly, 0, 0, texture->prect.w, texture->prect.h);
+      ((POLY_FT4*)model.meshes[0].polys[i].gpu_poly)->tpage = texture->tpage;
+      ((POLY_FT4*)model.meshes[0].polys[i].gpu_poly)->clut = texture->clut;
+      model.meshes[0].polys[i].colors[0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)model.meshes[0].polys[i].gpu_poly)->code };
     } else {
-      poly = &((POLY_F4*)model.polys)[i];
-      SetPolyF4((POLY_F4*)poly);
-      model.colors[i][0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)poly)->code };
+      model.meshes[0].polys[i].type = model_Poly_Type_F4;
+      model.meshes[0].polys[i].gpu_poly = malloc3(sizeof(POLY_F4));
+      SetPolyF4((POLY_F4*)model.meshes[0].polys[i].gpu_poly);
+      model.meshes[0].polys[i].colors[0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)model.meshes[0].polys[i].gpu_poly)->code };
+      
+      SetShadeTex((POLY_F4*)model.meshes[0].polys[i].gpu_poly, 1);
     }
   }
 

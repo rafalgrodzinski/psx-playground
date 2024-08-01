@@ -37,7 +37,6 @@ typedef struct model_Mesh {
 typedef struct model_Model {
   int meshes_count;
   model_Mesh *meshes;
-  //SVECTOR *vertices;
 } model_Model;
 
 typedef struct model_Anim {
