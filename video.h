@@ -19,11 +19,16 @@ struct model_Model;
 struct model_Object;
 struct cd_File;
 
-typedef struct video_Texture {
+typedef struct video_Image {
   RECT prect;
   u_short tpage;
   u_short clut;
   u_long mode;
+} video_Image;
+
+typedef struct video_Texture {
+  int images_count;
+  video_Image *images;
 } video_Texture;
 
 void video_init(int mode, CVECTOR background_color, int fps_limit, BOOL should_show_fps);

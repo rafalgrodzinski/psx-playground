@@ -6,7 +6,7 @@
 #include <libgpu.h>
 #include "types.h"
 
-struct video_Texture;
+struct video_Image;
 struct cd_File;
 
 typedef enum model_Poly_Type {
@@ -53,9 +53,9 @@ typedef struct model_Object {
   VECTOR scale;
 } model_Object;
 
-model_Model model_load_tmd(struct cd_File file, struct video_Texture *texture);
-model_Model model_create_cube(int size, CVECTOR color, struct video_Texture *texture);
-model_Model model_create_plane(int size, CVECTOR color, struct video_Texture *texture);
+model_Model model_load_tmd(struct cd_File file, struct video_Image *image);
+model_Model model_create_cube(int size, CVECTOR color, struct video_Image *image);
+model_Model model_create_plane(int size, CVECTOR color, struct video_Image *image);
 //model_Anim model_load_mime(struct cd_File file, model_Model model);
 
 #endif

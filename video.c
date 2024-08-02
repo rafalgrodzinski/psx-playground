@@ -131,23 +131,32 @@ void video_set_light_color(short r, short g, short b) {
 video_Texture video_load_texture(cd_File file) {
   video_Texture texture;
   TIM_IMAGE tim;
-
+  int i;
+  
+  // First figure out number of images
+  texture.images_count = 0;
   OpenTIM((u_long*)file.buffer);
-  ReadTIM(&tim);
-  LoadImage(tim.prect, tim.paddr);
-  // Transparency rate 1
-  texture.tpage = getTPage(tim.mode, 0, tim.prect->x, tim.prect->y);
+  while (ReadTIM(&tim) != NULL)
+    texture.images_count++;
+  
+  printf("Loading texture with %d image(s)\n", texture.images_count);
+  
+  texture.images = (video_Image*)malloc3(sizeof(video_Image) * texture.images_count);
 
-  if (tim.caddr) {
-    printf("Loading clut 0x%x\n", tim.caddr);
-    texture.clut = LoadClut(tim.caddr, tim.crect->x, tim.crect->y);
+  // Then read the data
+  OpenTIM((u_long*)file.buffer);
+  for (i=0; i<texture.images_count && ReadTIM(&tim) != NULL; i++) {
+    LoadImage(tim.prect, tim.paddr);
+    texture.images[i].tpage = getTPage(tim.mode, 0, tim.prect->x, tim.prect->y);
+
+    if (tim.caddr) {
+      texture.images[i].clut = LoadClut(tim.caddr, tim.crect->x, tim.crect->y);
+    }
+
+    texture.images[i].prect = *tim.prect;
+    texture.images[i].mode = tim.mode;
+    printf("Loaded image, x: %d y: %d w: %d h: %d mode: %d\n", tim.prect->x, tim.prect->y, tim.prect->w, tim.prect->h, tim.mode);
   }
-
-  texture.prect = *tim.prect;
-  texture.mode = tim.mode;
-
-  printf("mode: 0x%x, clut: 0x%x\n", texture.mode, texture.clut);
-  printf("Loaded texture, x: %d y: %d w: %d h: %d mode: %d\n", tim.prect->x, tim.prect->y, tim.prect->w, tim.prect->h, tim.mode);
 
   return texture;
 }

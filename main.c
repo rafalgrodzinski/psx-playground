@@ -77,7 +77,7 @@ int main() {
       p -= 32;
     }
 	
-	printf("vx: %d, vy: %d, vz: %d, sx: %d, sy: %d, sz: %d, p: %d\n", camera_offset.vx, camera_offset.vy, camera_offset.vz, test_object.scale.vx, test_object.scale.vy, test_object.scale.vz, p);
+	//printf("vx: %d, vy: %d, vz: %d, sx: %d, sy: %d, sz: %d, p: %d\n", camera_offset.vx, camera_offset.vy, camera_offset.vz, test_object.scale.vx, test_object.scale.vy, test_object.scale.vz, p);
 
     //video_animate_model(test_object.model, test_anim, p);
 
@@ -100,7 +100,7 @@ static load_data() {
   //file = cd_load_file("\\EARTH8.TIM;1");
   //texture = video_load_texture(file);
   //file = cd_load_file("\\EARTH.TMD;1");
-  //test_object.model = model_load_tmd(file, &texture);
+  //test_object.model = model_load_tmd(file, &texture.images[0]);
   
   // Dino
   //file = cd_load_file("\\DINO.TIM;1");
@@ -139,12 +139,12 @@ static load_data() {
   // Plane
   //file = cd_load_file("\\CRATE.TIM;1");
   //texture = video_load_texture(file);
-  //test_object.model = model_create_plane(500, (CVECTOR) { 128, 128, 128 }, &texture);
+  //test_object.model = model_create_plane(500, (CVECTOR) { 128, 128, 128 }, &texture.images[0]);
 
   // Box
   file = cd_load_file("\\CRATE.TIM;1");
   texture = video_load_texture(file);
-  test_object.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, &texture);
+  test_object.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, &texture.images[0]);
   
   test_object.angle = (SVECTOR) { 0, 0, 0 };
   test_object.offset = (VECTOR) { 0, 0, 0 };

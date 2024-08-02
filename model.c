@@ -2,7 +2,7 @@
 #include "video.h"
 #include "cd.h"
 
-model_Model model_load_tmd(cd_File file, video_Texture *texture) {
+model_Model model_load_tmd(cd_File file, video_Image *image) {
   model_Model model;
   TMD_PRIM tmd_prim;
   int i, j;
@@ -125,9 +125,9 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
           tmd_prim.u2, tmd_prim.v2,
           tmd_prim.u3, tmd_prim.v3);
           
-          if (texture != NULL) {
-            ((POLY_FT4*)mesh->polys[j].gpu_poly)->tpage =  texture->tpage;
-            ((POLY_FT4*)mesh->polys[j].gpu_poly)->clut = texture->clut;
+          if (image != NULL) {
+            ((POLY_FT4*)mesh->polys[j].gpu_poly)->tpage =  image->tpage;
+            ((POLY_FT4*)mesh->polys[j].gpu_poly)->clut = image->clut;
           } else {
             ((POLY_FT4*)mesh->polys[j].gpu_poly)->tpage = tmd_prim.tpage;
             ((POLY_FT4*)mesh->polys[j].gpu_poly)->clut = tmd_prim.clut;
@@ -141,9 +141,9 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
           tmd_prim.u2, tmd_prim.v2,
           tmd_prim.u3, tmd_prim.v3);
           
-          if (texture != NULL) {
-            ((POLY_GT4*)mesh->polys[j].gpu_poly)->tpage =  texture->tpage;
-            ((POLY_GT4*)mesh->polys[j].gpu_poly)->clut = texture->clut;
+          if (image != NULL) {
+            ((POLY_GT4*)mesh->polys[j].gpu_poly)->tpage =  image->tpage;
+            ((POLY_GT4*)mesh->polys[j].gpu_poly)->clut = image->clut;
           } else {
             ((POLY_GT4*)mesh->polys[j].gpu_poly)->tpage = tmd_prim.tpage;
             ((POLY_GT4*)mesh->polys[j].gpu_poly)->clut = tmd_prim.clut;
@@ -156,7 +156,7 @@ model_Model model_load_tmd(cd_File file, video_Texture *texture) {
   return model;
 }
 
-model_Model model_create_cube(int size, CVECTOR color, video_Texture *texture) {
+model_Model model_create_cube(int size, CVECTOR color, video_Image *image) {
   model_Model model;
   int i;
   
@@ -203,13 +203,13 @@ model_Model model_create_cube(int size, CVECTOR color, video_Texture *texture) {
 
     copyVector(model.meshes[0].polys[i].normals, normals[i]);
 
-    if (texture != NULL) {
+    if (image != NULL) {
       model.meshes[0].polys[i].type = model_Poly_Type_FT4;
       model.meshes[0].polys[i].gpu_poly = malloc3(sizeof(POLY_FT4));
       SetPolyFT4((POLY_FT4*)model.meshes[0].polys[i].gpu_poly);
-      setUVWH((POLY_FT4*)model.meshes[0].polys[i].gpu_poly, 0, 0, texture->prect.w, texture->prect.h);
-      ((POLY_FT4*)model.meshes[0].polys[i].gpu_poly)->tpage = texture->tpage;
-      ((POLY_FT4*)model.meshes[0].polys[i].gpu_poly)->clut = texture->clut;
+      setUVWH((POLY_FT4*)model.meshes[0].polys[i].gpu_poly, 0, 0, image->prect.w, image->prect.h);
+      ((POLY_FT4*)model.meshes[0].polys[i].gpu_poly)->tpage = image->tpage;
+      ((POLY_FT4*)model.meshes[0].polys[i].gpu_poly)->clut = image->clut;
       model.meshes[0].polys[i].colors[0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)model.meshes[0].polys[i].gpu_poly)->code };
     } else {
       model.meshes[0].polys[i].type = model_Poly_Type_F4;
@@ -226,7 +226,7 @@ model_Model model_create_cube(int size, CVECTOR color, video_Texture *texture) {
   return model;
 }
 
-model_Model model_create_plane(int size, CVECTOR color, video_Texture *texture) {
+model_Model model_create_plane(int size, CVECTOR color, video_Image *image) {
   model_Model model;
 
   model.meshes_count = 1;
@@ -235,7 +235,7 @@ model_Model model_create_plane(int size, CVECTOR color, video_Texture *texture) 
   model.meshes[0].polys_count = 1;
   model.meshes[0].polys = malloc3(sizeof(model_Poly));
 
-  if (texture != NULL) {
+  if (image != NULL) {
     model.meshes[0].polys[0].type = model_Poly_Type_FT4;
     model.meshes[0].polys[0].gpu_poly = malloc3(sizeof(POLY_FT4));
     SetPolyFT4((POLY_FT4*)model.meshes[0].polys[0].gpu_poly);
@@ -256,11 +256,11 @@ model_Model model_create_plane(int size, CVECTOR color, video_Texture *texture) 
   model.meshes[0].polys[0].vertice_offsets[3] = 3;
   model.meshes[0].polys[0].normals[0] = (SVECTOR) { 0, -ONE, 0, 0};
 
-  if (texture != NULL) {
+  if (image != NULL) {
     model.meshes[0].polys[0].colors[0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->code };
-    setUVWH((POLY_FT4*)model.meshes[0].polys[0].gpu_poly, 0, 0, texture->prect.w, texture->prect.h);
-    ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->tpage = texture->tpage;
-    ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->clut = texture->clut;
+    setUVWH((POLY_FT4*)model.meshes[0].polys[0].gpu_poly, 0, 0, image->prect.w, image->prect.h);
+    ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->tpage = image->tpage;
+    ((POLY_FT4*)model.meshes[0].polys[0].gpu_poly)->clut = image->clut;
   } else {
     model.meshes[0].polys[0].colors[0] = (CVECTOR) { color.r, color.g, color.b, ((POLY_F4*)model.meshes[0].polys[0].gpu_poly)->code };
   }

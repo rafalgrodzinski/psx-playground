@@ -6,13 +6,13 @@
 #include <libgpu.h>
 #include "types.h"
 
-struct video_Texture;
+struct video_Image;
 
 typedef struct sprite_Sprite {
   SPRT *sprite;
   DR_TPAGE *tpage_change;
 } sprite_Sprite;
 
-sprite_Sprite sprite_load_sprite(struct video_Texture texture);
+sprite_Sprite sprite_load_sprite(struct video_Image image);
 
 #endif
