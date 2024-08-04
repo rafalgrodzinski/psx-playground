@@ -61,6 +61,12 @@ int main() {
 
         if (pad_is_pressed(PAD_1, PAD_CROSS))
             camera_angle.vx += 16;
+
+        if (pad_is_pressed(PAD_1, PAD_SELECT))
+            p -= 32;
+
+        if (pad_is_pressed(PAD_1, PAD_START))
+            p += 32;
     }
 
     // Object 1
@@ -163,7 +169,7 @@ int main() {
 	printf("object2 - vx: %d, vy: %d, vz: %d, ax: %d, ay: %d, az: %d\n",
     object2.offset.vx, object2.offset.vy, object2.offset.vz, object2.angle.vx, object2.angle.vy, object2.angle.vz);
 
-    //video_animate_model(test_object.model, test_anim, p);
+    video_animate_model(object1.model, test_anim, p);
 
     video_init_frame();
     video_set_camera(camera_offset, camera_angle);
@@ -189,10 +195,10 @@ static load_data() {
   //test_object.model = model_load_tmd(file, &texture.images[0]);
   
   // Dino
-  file = cd_load_file("\\DINO.TIM;1");
-  video_load_texture(file);
-  file = cd_load_file("\\DINO.TMD;1");
-  object1.model = model_load_tmd(file, NULL);
+  //file = cd_load_file("\\DINO.TIM;1");
+  //video_load_texture(file);
+  //file = cd_load_file("\\DINO.TMD;1");
+  //object1.model = model_load_tmd(file, NULL);
   
   // Shutttle
   //file = cd_load_file("\\SHUTTLE.TMD;1");
@@ -231,6 +237,16 @@ static load_data() {
   //file = cd_load_file("\\CRATE.TIM;1");
   //texture = video_load_texture(file);
   //test_object.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, &texture.images[0]);
+
+  // Yokonobi
+  //file = cd_load_file("\\YOKONOBI.TMD;1");
+  //object1.model = model_load_tmd(file, NULL);
+  
+  // Base
+  file = cd_load_file("\\BASE.TMD;1");
+  object1.model = model_load_tmd(file, NULL);
+  file = cd_load_file("\\BASE.VDF;1");
+  test_anim = model_load_mime(file, object1.model);
  
   // Box 1
   //file = cd_load_file("\\CRATE.TIM;1");
@@ -251,7 +267,7 @@ static load_data() {
 
   //file = cd_load_file("\\DINO.VDF;1");
   //file = cd_load_file("\\MD0.VDF;1");
-  //test_anim = model_load_mime(file, test_object.model);
+  //test_anim = model_load_mime(file, object1.model);
 
   //init_mime_data(0,  file1.buffer, file2.buffer, file3.buffer, vertex_buff, normal_buff);
 }

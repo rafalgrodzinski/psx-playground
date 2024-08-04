@@ -418,7 +418,7 @@ void video_draw_poly_gt4(POLY_GT4 *poly, SVECTOR vertices[4], CVECTOR colors[4],
     }
 }
 
-/*void video_animate_model(model_Model model, model_Anim anim, int n) {
+void video_animate_model(model_Model model, model_Anim anim, int n) {
   int i;
   int cnv2[32] = {
     20,  30,  40,  50,  59,  79,  98, 128,
@@ -427,12 +427,12 @@ void video_draw_poly_gt4(POLY_GT4 *poly, SVECTOR vertices[4], CVECTOR colors[4],
     98,  79,  59,  50,  40,  30,  20,  10
   };
 
-  memcpy(model.raw_vertices, anim.original_vertices, sizeof(SVECTOR) * anim.count);
-  gteMIMefunc(model.raw_vertices, anim.diffs, anim.count, n);//cnv2[n % 32]);
-*/
+  memcpy(model.meshes[0].vertices, anim.original_vertices, sizeof(SVECTOR) * anim.count);
+  gteMIMefunc(model.meshes[0].vertices, anim.diffs, anim.count, n);//cnv2[n % 32]);
+
   /*for(i=0; i<anim.count; i++) {
     copyVector(&model.vertices[i/3][i%3], &anim.vertices[i]);
     copyVector(&anim.vertices[i], &anim.original_vertices[i/3][i%3]);
   }*/
-//}
+}
 

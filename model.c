@@ -272,7 +272,7 @@ model_Model model_create_plane(int size, CVECTOR color, video_Image *image) {
   return model;
 }
 
-/*model_Anim model_load_mime(cd_File file, model_Model model) {
+model_Anim model_load_mime(cd_File file, model_Model model) {
   model_Anim anim;
   long c;
 
@@ -286,31 +286,15 @@ model_Model model_create_plane(int size, CVECTOR color, video_Image *image) {
   anim.diffs = ptr;
   ptr += anim.count * 2;
 
-  printf("count: %d, num: %d, offset: %d, total: %d, addr: 0x%x\n", count, obj_num, offset, anim.count, anim.diffs);*/
-  
-  /*obj_num = *ptr++;
-  offset = *ptr++;
-  anim.count = *ptr++;
-  anim.diffs = ptr;
-  ptr += anim.count * 2;
+  printf("count: %d, num: %d, offset: %d, total: %d, addr: 0x%x\n", count, obj_num, offset, anim.count, anim.diffs);
 
-  printf("count: %d, num: %d, offset: %d, total: %d, addr: 0x%x\n", count, obj_num, offset, anim.count, c);
-
-  obj_num = *ptr++;
-  offset = *ptr++;
-  anim.count = *ptr++;
-  anim.diffs = ptr;
-  ptr += anim.count * 2;
-
-  printf("count: %d, num: %d, offset: %d, total: %d, addr: 0x%x\n", count, obj_num, offset, anim.count, c);*/
-
-  /*anim.original_vertices = (SVECTOR*)malloc3(sizeof(SVECTOR) * anim.count);
+  anim.original_vertices = (SVECTOR*)malloc3(sizeof(SVECTOR) * anim.count);
   //for (i=0; i<anim.count; i++) {
     //anim.original_vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 3);
     //copyVector(&anim.original_vertices[i][0], &model.vertices[i][0]);
     //copyVector(&anim.original_vertices[i][1], &model.vertices[i][1]);
     //copyVector(&anim.original_vertices[i][2], &model.vertices[i][2]);
-    memcpy(anim.original_vertices, model.raw_vertices, sizeof(SVECTOR) * anim.count);
+    memcpy(anim.original_vertices, model.meshes[0].vertices, sizeof(SVECTOR) * anim.count);
   //}
 
   //anim.vertices = (SVECTOR*)malloc3(sizeof(SVECTOR) * anim.count);
@@ -318,4 +302,4 @@ model_Model model_create_plane(int size, CVECTOR color, video_Image *image) {
   //  copyVector(&anim.vertices[i], &anim.original_vertices[i/3][i%3]);
 
   return anim;
-}*/
+}

@@ -29,6 +29,10 @@
       <file name="md2.tmd" type="data" source="data/md2.tmd"/>
       <file name="md3.tmd" type="data" source="data/md3.tmd"/>
       <file name="md4.tmd" type="data" source="data/md4.tmd"/>
+      
+      <file name="yokonobi.tmd" type="data" source="data/yokonobi.tmd"/>
+      <file name="base.tmd" type="data" source="data/base.tmd"/>
+      <file name="base.vdf" type="data" source="data/base.vdf"/>
 
       <file name="dino2.tmd" type="data" source="data/dino2.tmd"/>
       <file name="dino.tim" type="data" source="data/dino.tim"/>
