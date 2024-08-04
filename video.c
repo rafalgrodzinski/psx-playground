@@ -288,6 +288,7 @@ void video_draw_object(model_Object object) {
 
     RotMatrix(&object.angle, &object_matrix);
     TransMatrix(&object_matrix, &object.offset);
+    ScaleMatrix(&object_matrix, &object.scale);
 
     MulMatrix0(&light_matrix, &object_matrix, &out_matrix);
     SetLightMatrix(&out_matrix);
@@ -307,113 +308,114 @@ void video_draw_poly_f3(POLY_F3 *poly, SVECTOR vertices[3], CVECTOR color, SVECT
 	outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
 		&poly->x0, &poly->x1, &poly->x2,
 		&tmp, &otz, &tmp);
-	if (outerProduct > 0) {
+	if (outerProduct > 0 && otz > 0 && otz <= OT_SIZE) {
 		NormalColorCol(&normal, &color, &poly->r0);
 		AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
 	}
 }
 
 void video_draw_poly_f4(POLY_F4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {
-  long outerProduct, otz;
-  long tmp;
+    long outerProduct, otz;
+    long tmp;
 
-  outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
-    &poly->x0, &poly->x1, &poly->x2, &poly->x3,
-    &tmp, &otz, &tmp);
-  if (outerProduct > 0) {
-    NormalColorCol(&normal, &color, &poly->r0);
-    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
-  }
+    outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+      &poly->x0, &poly->x1, &poly->x2, &poly->x3,
+      &tmp, &otz, &tmp);
+    if (outerProduct > 0 && otz > 0 && otz <= OT_SIZE) {
+        NormalColorCol(&normal, &color, &poly->r0);
+        AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+    }
 }
 
 void video_draw_poly_ft3(POLY_FT3 *poly, SVECTOR vertices[3], CVECTOR color, SVECTOR normal) {
-  long outerProduct, otz;
-  long tmp;
+    long outerProduct, otz;
+    long tmp;
 
-  outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
-    &poly->x0, &poly->x1, &poly->x2,
-    &tmp, &otz, &tmp);
-  if (outerProduct > 0) {
-    NormalColorCol(&normal, &color, &poly->r0);
-    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
-  }
+    outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
+        &poly->x0, &poly->x1, &poly->x2,
+        &tmp, &otz, &tmp);
+    if (outerProduct > 0 && otz > 0 && otz <= OT_SIZE) {
+        NormalColorCol(&normal, &color, &poly->r0);
+        AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+    }
 }
 
 void video_draw_poly_ft4(POLY_FT4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {
-  long outerProduct, otz;
-  long tmp;
+    long outerProduct, otz;
+    long tmp;
+    
+    SetShadeTex(poly, 1);
   
-  SetShadeTex(poly, 1);
-
-  outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
-    &poly->x0, &poly->x1, &poly->x2, &poly->x3,
-    &tmp, &otz, &tmp);
-  if (outerProduct > 0) {
-    NormalColorCol(&normal, &color, &poly->r0);
-    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
-  }
+    outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+      &poly->x0, &poly->x1, &poly->x2, &poly->x3,
+      &tmp, &otz, &tmp);
+    if (outerProduct > 0 && otz > 0 && otz <= OT_SIZE) {
+        NormalColorCol(&normal, &color, &poly->r0);
+        AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+    }
 }
 
 void video_draw_poly_g3(POLY_G3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]) {
-  long outerProduct, otz;
-  long tmp;
-
-  outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
-    &poly->x0, &poly->x1, &poly->x2,
-    &tmp, &otz, &tmp);
-  if (outerProduct > 0) {
-    NormalColorCol(&normals[0], &colors[0], &poly->r0);
-    NormalColorCol(&normals[1], &colors[1], &poly->r1);
-    NormalColorCol(&normals[2], &colors[2], &poly->r2);
-    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
-  }
+    long outerProduct, otz;
+    long tmp;
+    int off;
+  
+    outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
+        &poly->x0, &poly->x1, &poly->x2,
+        &tmp, &otz, &tmp);
+    if (outerProduct > 0 && otz > 0 && otz <= OT_SIZE) {
+        NormalColorCol(&normals[0], &colors[0], &poly->r0);
+        NormalColorCol(&normals[1], &colors[1], &poly->r1);
+        NormalColorCol(&normals[2], &colors[2], &poly->r2);
+        AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+    }
 }
 
 void video_draw_poly_g4(POLY_G4 *poly, SVECTOR vertices[4], CVECTOR colors[4], SVECTOR normals[4]) {
-  long outerProduct, otz;
-  long tmp;
-
-  outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
-    &poly->x0, &poly->x1, &poly->x2, &poly->x3,
-    &tmp, &otz, &tmp);
-  if (outerProduct > 0) {
-    NormalColorCol(&normals[0], &colors[0], &poly->r0);
-    NormalColorCol(&normals[1], &colors[1], &poly->r1);
-    NormalColorCol(&normals[2], &colors[2], &poly->r2);
-    NormalColorCol(&normals[3], &colors[3], &poly->r3);
-    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
-  }
+    long outerProduct, otz;
+    long tmp;
+  
+    outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+        &poly->x0, &poly->x1, &poly->x2, &poly->x3,
+        &tmp, &otz, &tmp);
+    if (outerProduct > 0 && otz > 0 && otz <= OT_SIZE) {
+        NormalColorCol(&normals[0], &colors[0], &poly->r0);
+        NormalColorCol(&normals[1], &colors[1], &poly->r1);
+        NormalColorCol(&normals[2], &colors[2], &poly->r2);
+        NormalColorCol(&normals[3], &colors[3], &poly->r3);
+        AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+    }
 }
 
 void video_draw_poly_gt3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]) {
-  long outerProduct, otz;
-  long tmp;
-
-  outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
-    &poly->x0, &poly->x1, &poly->x2,
-    &tmp, &otz, &tmp);
-  if (outerProduct > 0) {
-    NormalColorCol(&normals[0], &colors[0], &poly->r0);
-    NormalColorCol(&normals[1], &colors[1], &poly->r1);
-    NormalColorCol(&normals[2], &colors[2], &poly->r2);
-    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
-  }
+    long outerProduct, otz;
+    long tmp;
+  
+    outerProduct = RotAverageNclip3(&vertices[0], &vertices[1], &vertices[2],
+        &poly->x0, &poly->x1, &poly->x2,
+        &tmp, &otz, &tmp);
+    if (outerProduct > 0 && otz > 0 && otz <= OT_SIZE) {
+        NormalColorCol(&normals[0], &colors[0], &poly->r0);
+        NormalColorCol(&normals[1], &colors[1], &poly->r1);
+        NormalColorCol(&normals[2], &colors[2], &poly->r2);
+        AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+    }
 }
 
 void video_draw_poly_gt4(POLY_GT4 *poly, SVECTOR vertices[4], CVECTOR colors[4], SVECTOR normals[4]) {
-  long outerProduct, otz;
-  long tmp;
-
-  outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
-    &poly->x0, &poly->x1, &poly->x2, &poly->x3,
-    &tmp, &otz, &tmp);
-  if (outerProduct > 0) {
-    NormalColorCol(&normals[0], &colors[0], &poly->r0);
-    NormalColorCol(&normals[1], &colors[1], &poly->r1);
-    NormalColorCol(&normals[2], &colors[2], &poly->r2);
-    NormalColorCol(&normals[3], &colors[3], &poly->r3);
-    AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
-  }
+    long outerProduct, otz;
+    long tmp;
+  
+    outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+        &poly->x0, &poly->x1, &poly->x2, &poly->x3,
+        &tmp, &otz, &tmp);
+    if (outerProduct > 0 && otz > 0 && otz <= OT_SIZE) {
+        NormalColorCol(&normals[0], &colors[0], &poly->r0);
+        NormalColorCol(&normals[1], &colors[1], &poly->r1);
+        NormalColorCol(&normals[2], &colors[2], &poly->r2);
+        NormalColorCol(&normals[3], &colors[3], &poly->r3);
+        AddPrim(ot[current_buffer] + OT_SIZE - otz, poly);
+    }
 }
 
 /*void video_animate_model(model_Model model, model_Anim anim, int n) {

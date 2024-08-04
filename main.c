@@ -18,15 +18,15 @@ SVECTOR camera_angle = {0, 0, 0};
 
 model_Object object1 = { 0 };
 model_Object object2 = { 0 };
-//model_Anim test_anim;
-//long p = 0;
+model_Anim test_anim;
+long p = 0;
 
 int main() {
   int i;
 
   core_init_all(VIDEO_HI_RES, (CVECTOR) { 20, 20, 20 }, FPS_LIMIT_60, TRUE);
   load_data();
-  video_set_1_light((SVECTOR) { ONE/2, ONE/2, ONE/2 }, (SVECTOR) { ONE, -ONE, -ONE }, (CVECTOR) { 10, 10, 10 });
+  video_set_1_light((SVECTOR) { ONE, ONE, ONE }, (SVECTOR) { ONE, -ONE, -ONE }, (CVECTOR) { 10, 10, 10 });
   //video_set_2_lights((SVECTOR) { ONE, 0, 0 }, (SVECTOR) { ONE, -ONE, -ONE }, (SVECTOR) { 0, ONE, 0 }, (SVECTOR) { -ONE, ONE, ONE }, (CVECTOR) { 10, 10, 10 });
 
   while(1) {
@@ -94,6 +94,18 @@ int main() {
 
         if (pad_is_pressed(PAD_1, PAD_CROSS))
             object1.angle.vx += 16;
+
+        if (pad_is_pressed(PAD_1, PAD_SELECT)) {
+            object1.scale.vx -= 16;
+            object1.scale.vy -= 16;
+            object1.scale.vz -= 16;
+        }
+
+        if (pad_is_pressed(PAD_1, PAD_START)) {
+            object1.scale.vx += 16;
+            object1.scale.vy += 16;
+            object1.scale.vz += 16;
+        }
     }
 
     // Object 2
@@ -127,6 +139,18 @@ int main() {
 
         if (pad_is_pressed(PAD_1, PAD_CROSS))
             object2.angle.vx += 16;
+
+        if (pad_is_pressed(PAD_1, PAD_SELECT)) {
+            object2.scale.vx -= 16;
+            object2.scale.vy -= 16;
+            object2.scale.vz -= 16;
+        }
+
+        if (pad_is_pressed(PAD_1, PAD_START)) {
+            object2.scale.vx += 16;
+            object2.scale.vy += 16;
+            object2.scale.vz += 16;
+        }
     }
 	
     printf("---\n");
@@ -145,7 +169,7 @@ int main() {
     video_set_camera(camera_offset, camera_angle);
 
     video_draw_object(object1);
-    video_draw_object(object2);
+    //video_draw_object(object2);
 
     video_draw();
   }
@@ -165,10 +189,10 @@ static load_data() {
   //test_object.model = model_load_tmd(file, &texture.images[0]);
   
   // Dino
-  //file = cd_load_file("\\DINO.TIM;1");
-  //video_load_texture(file);
-  //file = cd_load_file("\\DINO.TMD;1");
-  //test_object.model = model_load_tmd(file, NULL);
+  file = cd_load_file("\\DINO.TIM;1");
+  video_load_texture(file);
+  file = cd_load_file("\\DINO.TMD;1");
+  object1.model = model_load_tmd(file, NULL);
   
   // Shutttle
   //file = cd_load_file("\\SHUTTLE.TMD;1");
@@ -188,7 +212,7 @@ static load_data() {
   //file = cd_load_file("\\GIULI_WN.TIM;1");
   //video_load_texture(file);
   //file = cd_load_file("\\GIULIETA.TMD;1");
-  //test_object.model = model_load_tmd(file, NULL);
+  //object2.model = model_load_tmd(file, NULL);
 
   // Te
   //file = cd_load_file("\\TE.TMD;1");
@@ -196,7 +220,7 @@ static load_data() {
   
   // MD0
   //file = cd_load_file("\\MD0.TMD;1");
-  //test_object.model = model_load_tmd(file, NULL);
+  //object1.model = model_load_tmd(file, NULL);
   
   // Plane
   //file = cd_load_file("\\CRATE.TIM;1");
@@ -209,12 +233,12 @@ static load_data() {
   //test_object.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, &texture.images[0]);
  
   // Box 1
-  file = cd_load_file("\\CRATE.TIM;1");
-  texture = video_load_texture(file);
-  object1.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, &texture.images[0]);
+  //file = cd_load_file("\\CRATE.TIM;1");
+  //texture = video_load_texture(file);
+  //object1.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, &texture.images[0]);
 
   // Box 2
-  object2.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, NULL);
+  //object2.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, NULL);
   
   //test_object.angle = (SVECTOR) { 0, 0, 0 };
   //test_object.offset = (VECTOR) { 0, 0, 0 };
