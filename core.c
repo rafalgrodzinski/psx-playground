@@ -17,6 +17,4 @@ void core_init_all(int mode, CVECTOR background_color, int fps_limit, BOOL shoul
   audio_init();
   pad_init();
   cd_init();
-
-  video_set_light_color(ONE, ONE, ONE);
 }

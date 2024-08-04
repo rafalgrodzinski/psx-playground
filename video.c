@@ -11,6 +11,7 @@ DRAWENV draw[2];
 u_long ot[2][OT_SIZE];
 BOOL current_buffer;
 MATRIX camera_matrix;
+MATRIX light_matrix;
 
 BOOL should_show_fps;
 int fps, frames_count, vsyncs_count;
@@ -76,18 +77,6 @@ void video_init(int mode, CVECTOR background_color, int _fps_limit, BOOL _should
 }
 
 void video_init_frame() {
-  MATRIX light_input_matrix = {
-    ONE, -ONE, -ONE,
-    0, 0, 0,
-    0, 0, 0
-  };
-  MATRIX light_matrix;
-
-  PushMatrix();
-  MulMatrix0(&light_input_matrix, &camera_matrix, &light_matrix);
-  SetLightMatrix(&light_matrix);
-  PopMatrix();
-
   ClearOTag(ot[current_buffer], OT_SIZE);
 
   if (should_show_fps) {
@@ -107,25 +96,62 @@ void video_draw() {
 }
 
 void video_set_camera(VECTOR offset, SVECTOR angle) {
-  VECTOR output_vector;
-
-  RotMatrix(&angle, &camera_matrix);
-  ApplyMatrixLV(&camera_matrix, &offset, &output_vector);
-  TransMatrix(&camera_matrix, &output_vector);
-
-  SetTransMatrix(&camera_matrix);
-  SetRotMatrix(&camera_matrix);
+    RotMatrix(&angle, &camera_matrix);
+    TransMatrix(&camera_matrix, &offset);
 }
 
-void video_set_light_color(short r, short g, short b) {
-  MATRIX light_matrix = {
-    r, 0, 0,
-    g, 0, 0,
-    b, 0, 0,
-    0, 0, 0
-  };
+void video_set_1_light(SVECTOR color, SVECTOR angle, CVECTOR ambient_color) {
+    MATRIX color_matrix = {
+        color.vx, 0, 0,
+        color.vy, 0, 0,
+        color.vz, 0, 0
+    };
 
-  SetColorMatrix(&light_matrix);
+    SetColorMatrix(&color_matrix);
+
+    light_matrix = (MATRIX) {
+        angle.vx, angle.vy, angle.vz,
+        0, 0, 0,
+        0, 0, 0
+    };
+
+    SetBackColor(ambient_color.r, ambient_color.g, ambient_color.b);
+}
+
+void video_set_2_lights(SVECTOR color0, SVECTOR angle0, SVECTOR color1, SVECTOR angle1, CVECTOR ambient_color) {
+    MATRIX color_matrix = {
+        color0.vx, color1.vx, 0,
+        color0.vy, color1.vy, 0,
+        color0.vz, color1.vz, 0
+    };
+
+    SetColorMatrix(&color_matrix);
+
+    light_matrix = (MATRIX) {
+        angle0.vx, angle0.vy, angle0.vz,
+        angle1.vx, angle1.vy, angle1.vz,
+        0, 0, 0
+    };
+
+    SetBackColor(ambient_color.r, ambient_color.g, ambient_color.b);
+}
+
+void video_set_3_lights(SVECTOR color0, SVECTOR angle0, SVECTOR color1, SVECTOR angle1, SVECTOR color2, SVECTOR angle2, CVECTOR ambient_color) {
+    MATRIX color_matrix = {
+        color0.vx, color1.vx, color2.vx,
+        color0.vy, color1.vy, color2.vy,
+        color0.vz, color1.vz, color2.vz
+    };
+
+    SetColorMatrix(&color_matrix);
+
+    light_matrix = (MATRIX) {
+        angle0.vx, angle0.vy, angle0.vz,
+        angle1.vx, angle1.vy, angle1.vz,
+        angle2.vx, angle2.vy, angle2.vz
+    };
+
+    SetBackColor(ambient_color.r, ambient_color.g, ambient_color.b);
 }
 
 video_Texture video_load_texture(cd_File file) {
@@ -258,19 +284,20 @@ void video_draw_model(model_Model model) {
 }
 
 void video_draw_object(model_Object object) {
-  MATRIX object_matrix, output_matrix;
+    MATRIX object_matrix, out_matrix;
 
-  PushMatrix();
-  RotMatrix(&object.angle, &object_matrix);
-  TransMatrix(&object_matrix, &object.offset);
-  ScaleMatrix(&object_matrix, &object.scale);
-  CompMatrixLV(&camera_matrix, &object_matrix, &output_matrix);
-  SetTransMatrix(&output_matrix);
-  SetRotMatrix(&output_matrix);
+    RotMatrix(&object.angle, &object_matrix);
+    TransMatrix(&object_matrix, &object.offset);
+
+    MulMatrix0(&light_matrix, &object_matrix, &out_matrix);
+    SetLightMatrix(&out_matrix);
+
+    CompMatrixLV(&camera_matrix, &object_matrix, &out_matrix);
+
+    SetRotMatrix(&out_matrix);
+    SetTransMatrix(&out_matrix);
   
-  video_draw_model(object.model);
-
-  PopMatrix();
+    video_draw_model(object.model);
 }
 
 void video_draw_poly_f3(POLY_F3 *poly, SVECTOR vertices[3], CVECTOR color, SVECTOR normal) {
@@ -315,6 +342,8 @@ void video_draw_poly_ft3(POLY_FT3 *poly, SVECTOR vertices[3], CVECTOR color, SVE
 void video_draw_poly_ft4(POLY_FT4 *poly, SVECTOR vertices[4], CVECTOR color, SVECTOR normal) {
   long outerProduct, otz;
   long tmp;
+  
+  SetShadeTex(poly, 1);
 
   outerProduct = RotAverageNclip4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
     &poly->x0, &poly->x1, &poly->x2, &poly->x3,

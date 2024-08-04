@@ -36,7 +36,9 @@ void video_init_frame();
 void video_draw();
 
 void video_set_camera(VECTOR offset, SVECTOR angle);
-void video_set_light_color(short r, short g, short b);
+void video_set_1_light(SVECTOR color, SVECTOR angle, CVECTOR ambient_color);
+void video_set_2_lights(SVECTOR color0, SVECTOR angle0, SVECTOR color1, SVECTOR angle1, CVECTOR ambient_color);
+void video_set_3_lights(SVECTOR color0, SVECTOR angle0, SVECTOR color1, SVECTOR angle1, SVECTOR color2, SVECTOR angle2, CVECTOR ambient_color);
 
 video_Texture video_load_texture(struct cd_File file);
 
