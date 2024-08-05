@@ -1,0 +1,33 @@
+<iso_project image_name="test.bin">
+  <track type="data">
+    <identifiers system="PLAYSTATION" application="PLAYSTATION"/>
+
+    <directory_tree>
+      <file name="system.cnf" type="data" source="test/system.cnf"/>
+      <file name="main.exe" type="data"/>
+      <file name="te.tmd" type="data" source="test/data/te.tmd"/>
+      <file name="dino.tmd" type="data" source="test/data/dino.tmd"/>
+      <file name="earth.tmd" type="data" source="test/data/earth.tmd"/>
+      <file name="earth4.tim" type="data" source="test/data/earth4.tim"/>
+      <file name="earth8.tim" type="data" source="test/data/earth8.tim"/>
+      <file name="shuttle.tmd" type="data" source="test/data/shuttle.tmd"/>
+      <file name="giulieta.tmd" type="data" source="test/data/giulieta.tmd"/>
+      <file name="frog.tim" type="data" source="test/data/frog.tim"/>
+      <file name="giuli_tr.tim" type="data" source="test/data/giuli_tr.tim"/>
+      <file name="giuli_wn.tim" type="data" source="test/data/giuli_wn.tim"/>
+      <file name="giuli_bd.tim" type="data" source="test/data/giuli_bd.tim"/>
+      <file name="giuli_tl.tim" type="data" source="test/data/giuli_tl.tim"/>
+      <file name="giuli_pl.tim" type="data" source="test/data/giuli_pl.tim"/>
+      <file name="giuli_fr.tim" type="data" source="test/data/giuli_fr.tim"/>
+      <file name="crate.tim" type="data" source="test/data/crate.tim"/>
+
+      <file name="md0.tmd" type="data" source="test/data/md0.tmd"/>
+      <file name="md0.vdf" type="data" source="test/data/md0.vdf"/>
+      
+      <file name="dino.tim" type="data" source="test/data/dino.tim"/>
+      <file name="dino.vdf" type="data" source="test/data/dino.vdf"/>
+	  
+      <dummy sectors="1024"/>
+    </directory_tree> 
+  </track>
+</iso_project>

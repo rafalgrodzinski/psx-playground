@@ -1,11 +1,6 @@
-CFLAGS =
+CFLAGS = -I./
 LDFLAGS = -lLIBHMD lib/mmgmnew.obj
 OBJS = core.obj video.obj audio.obj pad.obj cd.obj sprite.obj model.obj
-
-all: $(OBJS)
-	ccpsx $(LDFLAGS) $(CFLAGS) -Xo$80010000 *.obj main.c -o main.cpe
-	cpe2x main.cpe
-	mkpsxiso -y test.xml
 
 core.obj:
 	ccpsx $(CFLAGS) -c core.c
@@ -28,8 +23,13 @@ sprite.obj:
 model.obj:
 	ccpsx $(CFLAGS) -c model.c
 
-run:
-	psymake
+test: $(OBJS)
+	ccpsx $(LDFLAGS) $(CFLAGS) -Xo$80010000 *.obj test\main.c -o main.cpe
+	cpe2x main.cpe
+	mkpsxiso -y test\test.xml
+
+test_run:
+	psymake test
 	No$psx test.bin
 
 clean:
