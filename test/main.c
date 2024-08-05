@@ -25,7 +25,7 @@ model_Object object2;
 int main() {
   core_init_all(VIDEO_HI_RES, (CVECTOR) { 20, 20, 20 }, FPS_LIMIT_60, TRUE);
   load_data();
-  video_set_1_light((SVECTOR) { ONE, ONE, ONE }, (SVECTOR) { ONE, -ONE, -ONE }, (CVECTOR) { 10, 10, 10 });
+  video_set_1_light((SVECTOR) { ONE*4, ONE*4, ONE*4 }, (SVECTOR) { ONE, -ONE, -ONE }, (CVECTOR) { 20, 20, 20 });
 
   while(1) {
     // Camera
@@ -61,10 +61,10 @@ int main() {
             camera_angle.vx += 16;
 
         if (pad_is_pressed(PAD_1, PAD_SELECT))
-            anim_p -= 32;
+            anim_p -= 64;
 
         if (pad_is_pressed(PAD_1, PAD_START))
-            anim_p += 32;
+            anim_p += 64;
     }
 
     // Object 1
@@ -181,10 +181,10 @@ static load_data() {
   //test_object.model = model_load_tmd(file, &texture.images[0]);
   
   // Dino
-  //file = cd_load_file("\\DINO.TIM;1");
-  //video_load_texture(file);
-  //file = cd_load_file("\\DINO.TMD;1");
-  //object1.model = model_load_tmd(file, NULL);
+  file = cd_load_file("\\DINO.TIM;1");
+  video_load_texture(file);
+  file = cd_load_file("\\DINO.TMD;1");
+  object2.model = model_load_tmd(file, NULL);
   
   // Shutttle
   //file = cd_load_file("\\SHUTTLE.TMD;1");
@@ -222,16 +222,14 @@ static load_data() {
   //object1.model = model_create_plane(500, (CVECTOR) { 128, 128, 128 }, &texture.images[0]);
 
   // Box
-  file = cd_load_file("\\CRATE.TIM;1");
-  texture = video_load_texture(file);
-  object2.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, &texture.images[0]);
+  //file = cd_load_file("\\CRATE.TIM;1");
+  //texture = video_load_texture(file);
+  //object2.model = model_create_cube(500, (CVECTOR) { 128, 128, 128 }, &texture.images[0]);
 
-  //test_object.angle = (SVECTOR) { 0, 0, 0 };
-  //test_object.offset = (VECTOR) { 0, 0, 0 };
-  object1.offset = (VECTOR) { -500, 0, 3000 };
-  object1.scale = (VECTOR) { ONE, ONE, ONE };
-  //test_object.scale = (VECTOR) { 2000, 2000, 2000 };
+  object1.offset = (VECTOR) { 500, 0, 3000 };
+  object1.scale = (VECTOR) { ONE/10, ONE/10, ONE/10 };
   
-  object2.offset = (VECTOR) { 500, 0, 3000 };
-  object2.scale = (VECTOR) { ONE, ONE, ONE };
+  object2.offset = (VECTOR) { -600, 0, 3000 };
+  object2.angle = (SVECTOR) { 0, ONE/2, 0 };
+  object2.scale = (VECTOR) { ONE/8, ONE/8, ONE/8 };
 }

@@ -107,10 +107,10 @@ model_Model model_load_tmd(cd_File file, video_Image *image) {
       copyVector(&mesh->polys[j].normals[3], &tmd_prim.n3);
     
       if (is_textured) {
-        mesh->polys[j].colors[0] = (CVECTOR) { 31, 31, 31, ((POLY_FT4*)mesh->polys[j].gpu_poly)->code };
-        mesh->polys[j].colors[1] = (CVECTOR) { 31, 31, 31, ((POLY_FT4*)mesh->polys[j].gpu_poly)->code };
-        mesh->polys[j].colors[2] = (CVECTOR) { 31, 31, 31, ((POLY_FT4*)mesh->polys[j].gpu_poly)->code };
-        mesh->polys[j].colors[3] = (CVECTOR) { 31, 31, 31, ((POLY_FT4*)mesh->polys[j].gpu_poly)->code };
+        mesh->polys[j].colors[0] = (CVECTOR) { 128, 128, 128, ((POLY_FT4*)mesh->polys[j].gpu_poly)->code };
+        mesh->polys[j].colors[1] = (CVECTOR) { 128, 128, 128, ((POLY_FT4*)mesh->polys[j].gpu_poly)->code };
+        mesh->polys[j].colors[2] = (CVECTOR) { 128, 128, 128, ((POLY_FT4*)mesh->polys[j].gpu_poly)->code };
+        mesh->polys[j].colors[3] = (CVECTOR) { 128, 128, 128, ((POLY_FT4*)mesh->polys[j].gpu_poly)->code };
       } else {
         mesh->polys[j].colors[0] = (CVECTOR) { tmd_prim.r0, tmd_prim.g0, tmd_prim.b0, ((POLY_F4*)mesh->polys[j].gpu_poly)->code };
         mesh->polys[j].colors[1] = (CVECTOR) { tmd_prim.r1, tmd_prim.g1, tmd_prim.b1, ((POLY_F4*)mesh->polys[j].gpu_poly)->code };
