@@ -17,6 +17,7 @@
 struct sprite_Sprite;
 struct model_Model;
 struct model_Object;
+struct model_Anim;
 struct cd_File;
 
 typedef struct video_Image {
@@ -58,6 +59,6 @@ void video_draw_poly_g4(POLY_G4 *poly, SVECTOR vertices[4], CVECTOR colors[4], S
 void video_draw_poly_gt3(POLY_GT3 *poly, SVECTOR vertices[3], CVECTOR colors[3], SVECTOR normals[3]);
 void video_draw_poly_gt4(POLY_GT4 *poly, SVECTOR vertices[4], CVECTOR colors[4], SVECTOR normals[4]);
 
-//void vide_animate_model(struct model_Model model, int n);
+void video_animate_model(struct model_Model model, struct model_Anim anim, int n);
 
 #endif

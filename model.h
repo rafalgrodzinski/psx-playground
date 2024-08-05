@@ -39,18 +39,18 @@ typedef struct model_Model {
   model_Mesh *meshes;
 } model_Model;
 
-typedef struct model_Anim {
-  int count; 
-  SVECTOR *original_vertices;
-  SVECTOR *diffs;
-} model_Anim;
-
 typedef struct model_Object {
   model_Model model;
   VECTOR offset;
   SVECTOR angle;
   VECTOR scale;
 } model_Object;
+
+typedef struct model_Anim {
+  int diffs_count; 
+  SVECTOR *diffs;
+  SVECTOR *original_vertices;
+} model_Anim;
 
 model_Model model_load_tmd(struct cd_File file, struct video_Image *image);
 model_Model model_create_cube(int size, CVECTOR color, struct video_Image *image);

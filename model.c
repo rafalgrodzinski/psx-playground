@@ -273,33 +273,21 @@ model_Model model_create_plane(int size, CVECTOR color, video_Image *image) {
 }
 
 model_Anim model_load_mime(cd_File file, model_Model model) {
-  model_Anim anim;
-  long c;
+    model_Anim anim;
+    long c;
+    
+    int i;
+    long *ptr = (long*)file.buffer;
+    ptr++; // objc_count
+    ptr++; // objc_num
+    ptr++; // offset
+    anim.diffs_count = *ptr++;
+    anim.diffs = ptr;
 
-  int i;
-  long *ptr = (long*)file.buffer;
-
-  int count = *ptr++;
-  long obj_num = *ptr++;
-  long offset = *ptr++;
-  anim.count = *ptr++;
-  anim.diffs = ptr;
-  ptr += anim.count * 2;
-
-  printf("count: %d, num: %d, offset: %d, total: %d, addr: 0x%x\n", count, obj_num, offset, anim.count, anim.diffs);
-
-  anim.original_vertices = (SVECTOR*)malloc3(sizeof(SVECTOR) * anim.count);
-  //for (i=0; i<anim.count; i++) {
-    //anim.original_vertices[i] = (SVECTOR*)malloc3(sizeof(SVECTOR) * 3);
-    //copyVector(&anim.original_vertices[i][0], &model.vertices[i][0]);
-    //copyVector(&anim.original_vertices[i][1], &model.vertices[i][1]);
-    //copyVector(&anim.original_vertices[i][2], &model.vertices[i][2]);
-    memcpy(anim.original_vertices, model.meshes[0].vertices, sizeof(SVECTOR) * anim.count);
-  //}
-
-  //anim.vertices = (SVECTOR*)malloc3(sizeof(SVECTOR) * anim.count);
-  //for (i=0; i<anim.count; i++) 
-  //  copyVector(&anim.vertices[i], &anim.original_vertices[i/3][i%3]);
-
-  return anim;
+    printf("Loading animation with %d diffs\n", anim.diffs_count);
+    
+    anim.original_vertices = (SVECTOR*)malloc3(sizeof(SVECTOR) * anim.diffs_count);
+    memcpy(anim.original_vertices, model.meshes[0].vertices, sizeof(SVECTOR) * anim.diffs_count);
+    
+    return anim;
 }
